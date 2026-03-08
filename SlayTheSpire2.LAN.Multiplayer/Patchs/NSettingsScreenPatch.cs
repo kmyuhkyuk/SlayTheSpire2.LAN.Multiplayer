@@ -87,7 +87,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
                 hostMaxPlayersInput.GetLineEdit().Alignment = HorizontalAlignment.Center;
 
                 hostMaxPlayersInput.Step = 1;
-                hostMaxPlayersInput.MinValue = 1;
+                hostMaxPlayersInput.MinValue = 2;
                 hostMaxPlayersInput.Value = SettingsHelper.Instance.SettingsModel.HostMaxPlayers;
                 hostMaxPlayersInput.ValueChanged += value =>
                 {
