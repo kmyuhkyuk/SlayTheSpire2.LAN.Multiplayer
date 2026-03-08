@@ -59,7 +59,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
 
                 if (count < tryCount - 1)
                 {
-                    Log.Warn($"{ip}:{port} Host Game NetID:{netId} already occupied, next try NetID:{nextNetId}");
+                    Log.Warn($"{ip}:{port} Host Game NetID:{netId} already occupied, Next will try NetID:{nextNetId}");
                 }
 
                 netId = nextNetId;
