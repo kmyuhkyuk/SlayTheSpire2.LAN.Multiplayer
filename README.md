@@ -13,4 +13,4 @@ Extract the archive to get mods folder then place mods folder into the game dire
 ![Screenshot1](Screenshot/screenshot1.png)
 ![Screenshot2](Screenshot/screenshot2.png)
 ![Screenshot3](Screenshot/screenshot3.png)
-![Screenshot3](Screenshot/screenshot4.png)
+![Screenshot4](Screenshot/screenshot4.png)
