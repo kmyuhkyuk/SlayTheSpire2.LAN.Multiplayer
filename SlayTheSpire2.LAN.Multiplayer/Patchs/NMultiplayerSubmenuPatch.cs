@@ -5,7 +5,6 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
 using MegaCrit.Sts2.Core.Runs;
-using MegaCrit.Sts2.Core.Saves;
 using SlayTheSpire2.LAN.Multiplayer.Helpers;
 
 // ReSharper disable UnusedMember.Global
@@ -111,17 +110,18 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
         {
             if (NMultiplayerSubmenuButtonHelpers.LanHostButton != null)
             {
-                NMultiplayerSubmenuButtonHelpers.LanHostButton.Visible = !SaveManager.Instance.HasMultiplayerRunSave;
+                NMultiplayerSubmenuButtonHelpers.LanHostButton.Visible = !LanRunSaveManagerHelper.HasMultiplayerRunSave;
             }
 
             if (NMultiplayerSubmenuButtonHelpers.LanLoadButton != null)
             {
-                NMultiplayerSubmenuButtonHelpers.LanLoadButton.Visible = SaveManager.Instance.HasMultiplayerRunSave;
+                NMultiplayerSubmenuButtonHelpers.LanLoadButton.Visible = LanRunSaveManagerHelper.HasMultiplayerRunSave;
             }
 
             if (NMultiplayerSubmenuButtonHelpers.LanAbandonButton != null)
             {
-                NMultiplayerSubmenuButtonHelpers.LanAbandonButton.Visible = SaveManager.Instance.HasMultiplayerRunSave;
+                NMultiplayerSubmenuButtonHelpers.LanAbandonButton.Visible =
+                    LanRunSaveManagerHelper.HasMultiplayerRunSave;
             }
         }
     }

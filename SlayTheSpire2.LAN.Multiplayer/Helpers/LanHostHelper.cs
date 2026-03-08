@@ -15,6 +15,7 @@ using MegaCrit.Sts2.Core.Platform;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves;
 
+// ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedType.Global
 // ReSharper disable ClassNeverInstantiated.Global
 
@@ -137,7 +138,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Helpers
             ushort port, int maxPlayers)
         {
             var readSaveResult =
-                SaveManager.Instance.LoadAndCanonicalizeMultiplayerRunSave(
+                LanRunSaveManagerHelper.LoadAndCanonicalizeMultiplayerRunSave(
                     PlatformUtil.GetLocalPlayerId(PlatformType.None));
             if (!readSaveResult.Success || readSaveResult.SaveData == null)
             {
@@ -176,7 +177,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Helpers
                 return;
 
             var readSaveResult =
-                SaveManager.Instance.LoadAndCanonicalizeMultiplayerRunSave(
+                LanRunSaveManagerHelper.LoadAndCanonicalizeMultiplayerRunSave(
                     PlatformUtil.GetLocalPlayerId(PlatformType.None));
             if (readSaveResult is { Success: true, SaveData: not null })
             {
@@ -205,7 +206,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Helpers
                     $"ERROR: Failed to load multiplayer run save: status={readSaveResult.Status}. Deleting current run...");
             }
 
-            SaveManager.Instance.DeleteCurrentMultiplayerRun();
+            LanRunSaveManagerHelper.DeleteCurrentMultiplayerRun();
             updateButtons();
         }
     }

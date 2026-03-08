@@ -12,7 +12,8 @@ namespace SlayTheSpire2.LAN.Multiplayer.Helpers
 
         public readonly SettingsModel SettingsModel;
 
-        private readonly GodotFileIo _modsDir = new($"{UserDataPathProvider.GetAccountScopedBasePath(null)}/mods");
+        private readonly GodotFileIo _modsDir =
+            new(Path.Combine(UserDataPathProvider.GetAccountScopedBasePath(null), "mods"));
 
         private SettingsHelper()
         {

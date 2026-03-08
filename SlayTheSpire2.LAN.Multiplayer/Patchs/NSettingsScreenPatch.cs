@@ -11,7 +11,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
     [HarmonyPatch(typeof(NSettingsScreen), "_Ready")]
     internal class NSettingsScreenPatch
     {
-        public static void Prefix(NSettingsScreen __instance)
+        private static void Prefix(NSettingsScreen __instance)
         {
             var moddingNode = __instance.GetNode("%Modding");
 
