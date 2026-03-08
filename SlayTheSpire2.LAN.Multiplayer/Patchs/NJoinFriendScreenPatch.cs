@@ -97,11 +97,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
                         port = ipAddressLineEdit.Port.Value;
                     }
 
-                    var netId = 1000uL;
-                    if (CommandLineHelper.TryGetValue("clientId", out var value) && value != null)
-                    {
-                        netId = ulong.Parse(value);
-                    }
+                    var netId = SettingsHelper.Instance.SettingsModel.NetId;
 
                     DisplayServer.WindowSetTitle("Slay The Spire 2 (Client)");
                     if (ipAddress != null)
