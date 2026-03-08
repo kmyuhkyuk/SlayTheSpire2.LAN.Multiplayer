@@ -22,27 +22,9 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
 
         public bool IsIPAndPort => IPAndPortRegex().IsMatch(Text);
 
-        public string? IPAddress
-        {
-            get
-            {
-                if (IsOnlyIP)
-                    return Text;
+        public string? IPAddress => IsOnlyIP ? Text : IsIPAndPort ? Text.Split(':').First() : null;
 
-                return IsIPAndPort ? Text.Split(':').First() : null;
-            }
-        }
-
-        public ushort? Port
-        {
-            get
-            {
-                if (IsIPAndPort)
-                    return Convert.ToUInt16(Text.Split(':').Last());
-
-                return null;
-            }
-        }
+        public ushort? Port => IsIPAndPort ? Convert.ToUInt16(Text.Split(':').Last()) : null;
 
         public override void _Ready()
         {
