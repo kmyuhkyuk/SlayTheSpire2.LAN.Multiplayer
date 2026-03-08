@@ -48,7 +48,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
 
                 if (!netErrorInfo.HasValue)
                 {
-                    Log.Info($"Connect {ip}:{port} Host Game NetID:{netId}");
+                    Log.Info($"Connect {ip}:{port} HostGame NetID:{netId}");
                     return null;
                 }
 
@@ -59,7 +59,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
 
                 if (count < tryCount - 1)
                 {
-                    Log.Warn($"{ip}:{port} Host Game NetID:{netId} already occupied, Next will try NetID:{nextNetId}");
+                    Log.Warn($"{ip}:{port} HostGame NetID:{netId} already occupied, Next will try NetID:{nextNetId}");
                 }
 
                 netId = nextNetId;
