@@ -11,6 +11,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Models
         [JsonPropertyName("host_port")] public ushort HostPort { get; set; } = 33771;
         [JsonPropertyName("host_max_players")] public int HostMaxPlayers { get; set; } = 4;
         [JsonPropertyName("ip_address")] public string IPAddress { get; set; } = "127.0.0.1";
+        [JsonPropertyName("net_id")] public ulong NetId { get; set; } = 1000u;
 
         public int SchemaVersion { get; set; }
     }

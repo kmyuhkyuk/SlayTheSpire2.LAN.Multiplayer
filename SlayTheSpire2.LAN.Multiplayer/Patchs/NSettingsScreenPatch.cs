@@ -97,6 +97,47 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
 
                 hostMaxPlayersLabel.Text = "Host Max Players";
             }
+
+            if (__instance.GetNode("%ModdingDivider").Duplicate() is ColorRect netIdDivider &&
+                moddingNode.Duplicate() is MarginContainer netId &&
+                netId.GetNode("Label") is RichTextLabel netIdLabel)
+            {
+                netIdDivider.Name = "NetIDDivider";
+
+                vBoxContainer.AddChild(netIdDivider);
+                vBoxContainer.MoveChild(netIdDivider, moddingNode.GetIndex() + 1);
+
+                netIdDivider.Show();
+
+                netId.Name = "NetID";
+
+                netId.RemoveChild(netId.GetNode("ModdingButton"));
+
+                vBoxContainer.AddChild(netId);
+                vBoxContainer.MoveChild(netId, netIdDivider.GetIndex() + 1);
+
+                netId.Show();
+
+                var netIdInput = new SpinBox { Name = "NetIDInput" };
+
+                netId.AddChild(netIdInput);
+
+                netIdInput.CustomMinimumSize = new Vector2(324, 64);
+                netIdInput.SizeFlagsHorizontal = Control.SizeFlags.ShrinkEnd;
+                netIdInput.GetLineEdit().Alignment = HorizontalAlignment.Center;
+
+                netIdInput.Step = 1;
+                netIdInput.MinValue = 2;
+                netIdInput.MaxValue = double.MaxValue;
+                netIdInput.Value = SettingsHelper.Instance.SettingsModel.NetId;
+                netIdInput.ValueChanged += value =>
+                {
+                    SettingsHelper.Instance.SettingsModel.NetId = (ulong)value;
+                    SettingsHelper.Instance.WriteSettings();
+                };
+
+                netIdLabel.Text = "NetID";
+            }
         }
     }
 }
