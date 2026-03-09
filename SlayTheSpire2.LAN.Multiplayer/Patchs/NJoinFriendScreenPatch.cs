@@ -2,6 +2,7 @@
 using HarmonyLib;
 using MegaCrit.Sts2.addons.mega_text;
 using MegaCrit.Sts2.Core.Helpers;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Multiplayer.Connection;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
@@ -112,7 +113,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
 
                 var joinButtonLabel = joinButton.GetNode<MegaLabel>("Label");
 
-                joinButtonLabel.SetTextAutoSize("Join");
+                joinButtonLabel.SetTextAutoSize(new LocString("main_menu_ui", "JOIN.title").GetFormattedText());
             }
         }
     }
