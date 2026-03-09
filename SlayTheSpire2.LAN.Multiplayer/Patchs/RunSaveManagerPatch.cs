@@ -22,7 +22,10 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
         {
             if (!RunManager.Instance.ShouldSave || (RunManager.Instance.NetService.Type != NetGameType.Singleplayer &&
                                                     RunManager.Instance.NetService.Type != NetGameType.Host))
+            {
+                __result = Task.CompletedTask;
                 return false;
+            }
 
             __result = TaskHelper.RunSafely(SaveRun(__instance, preFinishedRoom, ____forceSynchronous, ____saveStore,
                 ___Saved));
