@@ -80,7 +80,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
                 joinButton.CustomMinimumSize = new Vector2(150, 50);
                 joinButton.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
 
-                joinButton.Connect(NClickableControl.SignalName.Released, Callable.From<NClickableControl>(delegate
+                joinButton.Connect(NClickableControl.SignalName.Released, Callable.From<NClickableControl>(_ =>
                 {
                     if (!ipAddressLineEdit.IsOnlyIP &&
                         (!ipAddressLineEdit.IsIPAndPort || !ipAddressLineEdit.Port.HasValue))
