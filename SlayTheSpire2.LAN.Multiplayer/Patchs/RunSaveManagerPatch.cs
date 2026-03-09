@@ -20,13 +20,6 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
         private static bool Prefix(RunSaveManager __instance, AbstractRoom? preFinishedRoom, bool ____forceSynchronous,
             ISaveStore ____saveStore, Action? ___Saved, ref Task __result)
         {
-            if (!RunManager.Instance.ShouldSave || (RunManager.Instance.NetService.Type != NetGameType.Singleplayer &&
-                                                    RunManager.Instance.NetService.Type != NetGameType.Host))
-            {
-                __result = Task.CompletedTask;
-                return false;
-            }
-
             __result = TaskHelper.RunSafely(SaveRun(__instance, preFinishedRoom, ____forceSynchronous, ____saveStore,
                 ___Saved));
 
@@ -37,6 +30,10 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
             bool forceSynchronous,
             ISaveStore saveStore, Action? saved)
         {
+            if (!RunManager.Instance.ShouldSave || (RunManager.Instance.NetService.Type != NetGameType.Singleplayer &&
+                                                    RunManager.Instance.NetService.Type != NetGameType.Host))
+                return;
+
             var value = RunManager.Instance.ToSave(preFinishedRoom);
             var savePath = RunManager.Instance.NetService.Type.IsMultiplayer()
                 ? RunManager.Instance.NetService.Platform == PlatformType.None
