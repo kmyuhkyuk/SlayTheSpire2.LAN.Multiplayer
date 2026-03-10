@@ -2,6 +2,8 @@
 using MegaCrit.Sts2.Core.Multiplayer.Transport.ENet;
 using SlayTheSpire2.LAN.Multiplayer.Models;
 
+// ReSharper disable ClassNeverInstantiated.Global
+
 namespace SlayTheSpire2.LAN.Multiplayer.Helpers
 {
     internal class LanHandshakeResponseHelper
