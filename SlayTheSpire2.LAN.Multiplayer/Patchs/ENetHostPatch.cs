@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Multiplayer.Transport;
 using MegaCrit.Sts2.Core.Multiplayer.Transport.ENet;
@@ -95,6 +96,27 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
                 connectedPeers.Add(handshakeConn);
                 handler.OnPeerConnected(handshakeNetId);
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(ENetHost), "StartHost")]
+    internal class ENetHostStartHostPatch
+    {
+        private static bool Prefix(ushort port, int maxClients, Logger ____logger, ref ENetConnection? ____connection,
+            ref bool ____isConnected, ref NetErrorInfo? __result)
+        {
+            ____connection = new ENetConnection();
+            var error = ____connection.CreateHostBound("*", port, maxClients);
+            if (error != Error.Ok)
+            {
+                ____logger.Error($"Failed to create host! {error}");
+                __result = new NetErrorInfo(error);
+                return false;
+            }
+
+            ____isConnected = true;
+
+            return false;
         }
     }
 }

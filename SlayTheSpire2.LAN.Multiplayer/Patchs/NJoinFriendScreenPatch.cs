@@ -62,14 +62,14 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
                 ipAddressLabel.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
             }
 
-            var ipAddressLineEdit = new IPAddressLineEdit { Name = "IPInput" };
+            var addressLineEdit = new AddressLineEdit { Name = "AddressInput" };
 
-            vBoxContainer.AddChild(ipAddressLineEdit);
+            vBoxContainer.AddChild(addressLineEdit);
 
-            ipAddressLineEdit.Text = SettingsHelper.Instance.SettingsModel.IPAddress;
-            ipAddressLineEdit.Alignment = HorizontalAlignment.Center;
-            ipAddressLineEdit.CustomMinimumSize = new Vector2(300, 50);
-            ipAddressLineEdit.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
+            addressLineEdit.Text = SettingsHelper.Instance.SettingsModel.IPAddress;
+            addressLineEdit.Alignment = HorizontalAlignment.Center;
+            addressLineEdit.CustomMinimumSize = new Vector2(300, 50);
+            addressLineEdit.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
 
             if (__instance.GetNode<NJoinFriendRefreshButton>("RefreshButton").Duplicate() is NJoinFriendRefreshButton
                 joinButton)
@@ -83,28 +83,27 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
 
                 joinButton.Connect(NClickableControl.SignalName.Released, Callable.From<NClickableControl>(_ =>
                 {
-                    if (!ipAddressLineEdit.IsOnlyIP &&
-                        (!ipAddressLineEdit.IsIPAndPort || !ipAddressLineEdit.Port.HasValue))
+                    var addressInfo = addressLineEdit.GetAddressInfo();
+
+                    if (!addressInfo.IsValid)
                         return;
 
-                    SettingsHelper.Instance.SettingsModel.IPAddress = ipAddressLineEdit.Text;
+                    SettingsHelper.Instance.SettingsModel.IPAddress = addressLineEdit.Text;
                     SettingsHelper.Instance.WriteSettings();
 
-                    var ipAddress = ipAddressLineEdit.IPAddress;
                     ushort port = 33771;
 
-                    if (ipAddressLineEdit.Port.HasValue)
+                    if (addressInfo.Port.HasValue)
                     {
-                        port = ipAddressLineEdit.Port.Value;
+                        port = addressInfo.Port.Value;
                     }
 
-                    var netId = SettingsHelper.Instance.SettingsModel.NetId;
-
                     DisplayServer.WindowSetTitle("Slay The Spire 2 (Client)");
-                    if (ipAddress != null)
+                    if (addressInfo.Address != null)
                     {
                         TaskHelper.RunSafely(
-                            __instance.JoinGameAsync(new ENetClientConnectionInitializer(netId, ipAddress, port)));
+                            __instance.JoinGameAsync(new ENetClientConnectionInitializer(
+                                SettingsHelper.Instance.SettingsModel.NetId, addressInfo.Address, port)));
                     }
                 }));
 

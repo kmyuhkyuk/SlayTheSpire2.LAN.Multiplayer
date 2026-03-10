@@ -15,6 +15,9 @@
     <Reference Include="GodotSharp">
       <HintPath>V:\Slay.the.Spire.2\game\data_sts2_windows_x86_64\GodotSharp.dll</HintPath>
     </Reference>
+    <Reference Include="Steamworks.NET">
+      <HintPath>V:\Slay.the.Spire.2\game\data_sts2_windows_x86_64\Steamworks.NET.dll</HintPath>
+    </Reference>
     <Reference Include="sts2">
       <HintPath>V:\Slay.the.Spire.2\game\data_sts2_windows_x86_64\sts2.dll</HintPath>
     </Reference>

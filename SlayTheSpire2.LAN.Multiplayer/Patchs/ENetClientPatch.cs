@@ -24,7 +24,8 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
             return false;
         }
 
-        private static async Task<NetErrorInfo?> ConnectToHost(ENetClient eNetClient, Logger logger, INetClientHandler handler, ulong netId, string ip, ushort port, CancellationToken cancelToken)
+        private static async Task<NetErrorInfo?> ConnectToHost(ENetClient eNetClient, Logger logger,
+            INetClientHandler handler, ulong netId, string ip, ushort port, CancellationToken cancelToken)
         {
             while (true)
             {
@@ -34,7 +35,8 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
                 var peer = connection.ConnectToHost(ip, port);
                 Traverse.Create(eNetClient).Field("_peer").SetValue(peer);
                 var timeoutTimer = 0;
-                while (!connection.TryService(out var output) || output is not { type: ENetConnection.EventType.Connect })
+                while (!connection.TryService(out var output) ||
+                       output is not { type: ENetConnection.EventType.Connect })
                 {
                     await Task.Delay(100, cancelToken);
                     if (cancelToken.IsCancellationRequested)
@@ -60,7 +62,8 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
                 }
 
                 var bufferedPackets = new List<ENetServiceData>();
-                var (result, newNetId) = await SendAndWaitForNetIdAck(eNetClient, logger, peer, connection, netId, bufferedPackets, cancelToken);
+                var (result, newNetId) = await SendAndWaitForNetIdAck(eNetClient, logger, peer, connection, netId,
+                    bufferedPackets, cancelToken);
                 if (result.HasValue)
                 {
                     peer.PeerDisconnect();
