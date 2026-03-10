@@ -19,7 +19,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
     {
         private static void Prefix(NJoinFriendScreen __instance)
         {
-            var lanPanel = new NinePatchRect { Name = "LanPanel" };
+            var lanPanel = new NinePatchRect { Name = "LANPanel" };
 
             __instance.AddChild(lanPanel);
 
