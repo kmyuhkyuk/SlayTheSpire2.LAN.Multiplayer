@@ -128,7 +128,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
 
                 netIdInput.Step = 1;
                 netIdInput.MinValue = 2;
-                netIdInput.MaxValue = double.MaxValue;
+                netIdInput.MaxValue = ulong.MaxValue;
                 netIdInput.Value = SettingsHelper.Instance.SettingsModel.NetId;
                 netIdInput.ValueChanged += value =>
                 {
