@@ -68,7 +68,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
 
                 while (connectedPeerIdHashSet.Contains(newNetId))
                 {
-                    newNetId += 1000;
+                    newNetId += 1000u;
                 }
 
                 logger.Info(
