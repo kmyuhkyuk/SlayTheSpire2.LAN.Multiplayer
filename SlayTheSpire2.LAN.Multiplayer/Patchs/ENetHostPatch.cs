@@ -64,7 +64,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
 
             if (connectedPeerIdHashSet.Contains(handshakeNetId))
             {
-                var newNetId = handshakeNetId;
+                var newNetId = 1000u;
 
                 while (connectedPeerIdHashSet.Contains(newNetId))
                 {
