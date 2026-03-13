@@ -10,16 +10,16 @@
 
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>V:\Slay.the.Spire.2\game\data_sts2_windows_x86_64\0Harmony.dll</HintPath>
+      <HintPath>V:\Slay.the.Spire.2\data_sts2_windows_x86_64\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="GodotSharp">
-      <HintPath>V:\Slay.the.Spire.2\game\data_sts2_windows_x86_64\GodotSharp.dll</HintPath>
+      <HintPath>V:\Slay.the.Spire.2\data_sts2_windows_x86_64\GodotSharp.dll</HintPath>
     </Reference>
     <Reference Include="Steamworks.NET">
-      <HintPath>V:\Slay.the.Spire.2\game\data_sts2_windows_x86_64\Steamworks.NET.dll</HintPath>
+      <HintPath>V:\Slay.the.Spire.2\data_sts2_windows_x86_64\Steamworks.NET.dll</HintPath>
     </Reference>
     <Reference Include="sts2">
-      <HintPath>V:\Slay.the.Spire.2\game\data_sts2_windows_x86_64\sts2.dll</HintPath>
+      <HintPath>V:\Slay.the.Spire.2\data_sts2_windows_x86_64\sts2.dll</HintPath>
     </Reference>
   </ItemGroup>
 
