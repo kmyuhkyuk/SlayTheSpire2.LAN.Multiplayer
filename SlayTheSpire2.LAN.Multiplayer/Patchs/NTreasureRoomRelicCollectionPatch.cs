@@ -18,14 +18,14 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
             if (runState is { Players.Count: > 4 })
             {
                 var container = __instance.GetNode("Container");
-                var lastMultiplayerRelicHolder = container.GetNode("MultiplayerRelicHolder4");
+                var multiplayerRelicHolder = container.GetNode("MultiplayerRelicHolder4");
 
                 for (var i = 4; i < runState.Players.Count; i++)
                 {
-                    lastMultiplayerRelicHolder = lastMultiplayerRelicHolder.Duplicate();
-                    container.AddChild(lastMultiplayerRelicHolder);
+                    var newMultiplayerRelicHolder = multiplayerRelicHolder.Duplicate();
+                    container.AddChild(newMultiplayerRelicHolder);
 
-                    if (lastMultiplayerRelicHolder is NTreasureRoomRelicHolder nTreasureRoomRelicHolder)
+                    if (newMultiplayerRelicHolder is NTreasureRoomRelicHolder nTreasureRoomRelicHolder)
                     {
                         nTreasureRoomRelicHolder.Name = $"MultiplayerRelicHolder{i + 1}";
                     }
