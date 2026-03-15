@@ -6,10 +6,10 @@ using MegaCrit.Sts2.Core.Runs;
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
 
-namespace SlayTheSpire2.LAN.Multiplayer.Patchs
+namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
 {
     [HarmonyPatch(typeof(NRestSiteRoom), "_Ready")]
-    internal class NRestSiteRoomPatch
+    internal class NRestSiteRoomReadyPatch
     {
         private static void Prefix(NRestSiteRoom __instance, IRunState ____runState,
             List<Control> ____characterContainers)

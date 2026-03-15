@@ -10,7 +10,7 @@ using SlayTheSpire2.LAN.Multiplayer.Helpers;
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
 
-namespace SlayTheSpire2.LAN.Multiplayer.Patchs
+namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
 {
     [HarmonyPatch(typeof(NMultiplayerSubmenu), "_Ready")]
     internal class NMultiplayerSubmenuReadyPatch

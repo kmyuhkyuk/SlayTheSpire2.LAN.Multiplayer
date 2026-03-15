@@ -1,21 +1,23 @@
 ﻿using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Nodes.Screens.Settings;
+using SlayTheSpire2.LAN.Multiplayer.Components;
 using SlayTheSpire2.LAN.Multiplayer.Helpers;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
 
-namespace SlayTheSpire2.LAN.Multiplayer.Patchs
+namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
 {
     [HarmonyPatch(typeof(NSettingsScreen), "_Ready")]
-    internal class NSettingsScreenPatch
+    internal class NSettingsScreenReadyPatch
     {
         private static void Prefix(NSettingsScreen __instance)
         {
             var moddingNode = __instance.GetNode("%Modding");
 
-            var vBoxContainer = moddingNode.GetParent();
+            var vBoxContainerNode = moddingNode.GetParent();
+            var generalSettings = vBoxContainerNode.GetParent();
 
             if (__instance.GetNode("%ModdingDivider").Duplicate() is ColorRect hostPortDivider &&
                 moddingNode.Duplicate() is MarginContainer hostPort &&
@@ -23,8 +25,8 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
             {
                 hostPortDivider.Name = "HostPortDivider";
 
-                vBoxContainer.AddChild(hostPortDivider);
-                vBoxContainer.MoveChild(hostPortDivider, moddingNode.GetIndex() + 1);
+                vBoxContainerNode.AddChild(hostPortDivider);
+                vBoxContainerNode.MoveChild(hostPortDivider, moddingNode.GetIndex() + 1);
 
                 hostPortDivider.Show();
 
@@ -32,8 +34,8 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
 
                 hostPort.RemoveChild(hostPort.GetNode("ModdingButton"));
 
-                vBoxContainer.AddChild(hostPort);
-                vBoxContainer.MoveChild(hostPort, hostPortDivider.GetIndex() + 1);
+                vBoxContainerNode.AddChild(hostPort);
+                vBoxContainerNode.MoveChild(hostPort, hostPortDivider.GetIndex() + 1);
 
                 hostPort.Show();
 
@@ -64,8 +66,8 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
             {
                 hostMaxPlayersDivider.Name = "HostMaxPlayersDivider";
 
-                vBoxContainer.AddChild(hostMaxPlayersDivider);
-                vBoxContainer.MoveChild(hostMaxPlayersDivider, moddingNode.GetIndex() + 1);
+                vBoxContainerNode.AddChild(hostMaxPlayersDivider);
+                vBoxContainerNode.MoveChild(hostMaxPlayersDivider, moddingNode.GetIndex() + 1);
 
                 hostMaxPlayersDivider.Show();
 
@@ -73,8 +75,8 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
 
                 hostMaxPlayers.RemoveChild(hostMaxPlayers.GetNode("ModdingButton"));
 
-                vBoxContainer.AddChild(hostMaxPlayers);
-                vBoxContainer.MoveChild(hostMaxPlayers, hostMaxPlayersDivider.GetIndex() + 1);
+                vBoxContainerNode.AddChild(hostMaxPlayers);
+                vBoxContainerNode.MoveChild(hostMaxPlayers, hostMaxPlayersDivider.GetIndex() + 1);
 
                 hostMaxPlayers.Show();
 
@@ -98,14 +100,57 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
                 hostMaxPlayersLabel.Text = "Host Max Players";
             }
 
+            if (__instance.GetNode("%ModdingDivider").Duplicate() is ColorRect playerNameDivider &&
+                moddingNode.Duplicate() is MarginContainer playerName &&
+                playerName.GetNode("Label") is RichTextLabel playerNameLabel)
+            {
+                playerNameDivider.Name = "PlayerNameDivider";
+
+                vBoxContainerNode.AddChild(playerNameDivider);
+                vBoxContainerNode.MoveChild(playerNameDivider, moddingNode.GetIndex() + 1);
+
+                playerNameDivider.Show();
+
+                playerName.Name = "PlayerName";
+
+                playerName.RemoveChild(playerName.GetNode("ModdingButton"));
+
+                vBoxContainerNode.AddChild(playerName);
+                vBoxContainerNode.MoveChild(playerName, playerNameDivider.GetIndex() + 1);
+
+                playerName.Show();
+
+                var playerNameInput = new PlayerNameLineEdit { Name = "PlayerNameInput" };
+
+                playerName.AddChild(playerNameInput);
+
+                playerNameInput.CustomMinimumSize = new Vector2(324, 64);
+                playerNameInput.SizeFlagsHorizontal = Control.SizeFlags.ShrinkEnd;
+                playerNameInput.Alignment = HorizontalAlignment.Center;
+
+                playerNameInput.MaxLength = 16;
+                playerNameInput.Text = SettingsHelper.Instance.SettingsModel.PlayerName;
+                playerNameInput.TextChanged += value =>
+                {
+                    if (playerNameInput.IsEmpty || !playerNameInput.IsInvalid)
+                    {
+                        SettingsHelper.Instance.SettingsModel.PlayerName = value;
+                        LanPlayerNameHelper.SetHostPlayerName();
+                        SettingsHelper.Instance.WriteSettings();
+                    }
+                };
+
+                playerNameLabel.Text = "Player Name";
+            }
+
             if (__instance.GetNode("%ModdingDivider").Duplicate() is ColorRect netIdDivider &&
                 moddingNode.Duplicate() is MarginContainer netId &&
                 netId.GetNode("Label") is RichTextLabel netIdLabel)
             {
                 netIdDivider.Name = "NetIDDivider";
 
-                vBoxContainer.AddChild(netIdDivider);
-                vBoxContainer.MoveChild(netIdDivider, moddingNode.GetIndex() + 1);
+                vBoxContainerNode.AddChild(netIdDivider);
+                vBoxContainerNode.MoveChild(netIdDivider, moddingNode.GetIndex() + 1);
 
                 netIdDivider.Show();
 
@@ -113,8 +158,8 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
 
                 netId.RemoveChild(netId.GetNode("ModdingButton"));
 
-                vBoxContainer.AddChild(netId);
-                vBoxContainer.MoveChild(netId, netIdDivider.GetIndex() + 1);
+                vBoxContainerNode.AddChild(netId);
+                vBoxContainerNode.MoveChild(netId, netIdDivider.GetIndex() + 1);
 
                 netId.Show();
 
@@ -137,6 +182,11 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
                 };
 
                 netIdLabel.Text = "NetID";
+            }
+
+            if (generalSettings is NSettingsPanel nSettingsPanel)
+            {
+                Traverse.Create(nSettingsPanel).Method("RefreshSize").GetValue();
             }
         }
     }

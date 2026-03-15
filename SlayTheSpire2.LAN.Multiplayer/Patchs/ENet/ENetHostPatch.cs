@@ -12,7 +12,7 @@ using Logger = MegaCrit.Sts2.Core.Logging.Logger;
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
 
-namespace SlayTheSpire2.LAN.Multiplayer.Patchs
+namespace SlayTheSpire2.LAN.Multiplayer.Patchs.ENet
 {
     [HarmonyPatch(typeof(ENetHost), "DoClientHandshake")]
     internal class ENetHostDoClientHandshakePatch

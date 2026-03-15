@@ -8,11 +8,12 @@ using SlayTheSpire2.LAN.Multiplayer.Helpers;
 namespace SlayTheSpire2.LAN.Multiplayer.Patchs
 {
     [HarmonyPatch(typeof(RunManager), "CleanUp")]
-    internal class RunManagerPatch
+    internal class RunManagerCleanUpPatch
     {
         private static void Postfix()
         {
             LanMapDrawingsHelper.DisableDrawingHashSet.Clear();
+            LanPlayerNameHelper.SetDefaultPlayerNameDictionary();
         }
     }
 }

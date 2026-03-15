@@ -8,7 +8,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
     {
         public override void _Ready()
         {
-            TextSubmitted += OnTextSubmitted;
+            TextChanged += OnTextChanged;
         }
 
         public struct AddressInfo(bool isValid, string? address, ushort? port)
@@ -50,13 +50,14 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
             else if (IPEndPoint.TryParse(Text, out var ipEndPoint))
             {
                 addressInfo.IsValid = true;
+                addressInfo.Address = ipEndPoint.Address.ToString();
                 addressInfo.Port = (ushort)ipEndPoint.Port;
             }
 
             return addressInfo;
         }
 
-        private void OnTextSubmitted(string newText)
+        private void OnTextChanged(string newText)
         {
             Modulate = Colors.White;
 
