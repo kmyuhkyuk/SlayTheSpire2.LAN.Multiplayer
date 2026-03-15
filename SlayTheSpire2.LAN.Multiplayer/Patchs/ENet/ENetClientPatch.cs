@@ -10,7 +10,7 @@ using Logger = MegaCrit.Sts2.Core.Logging.Logger;
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
 
-namespace SlayTheSpire2.LAN.Multiplayer.Patchs
+namespace SlayTheSpire2.LAN.Multiplayer.Patchs.ENet
 {
     [HarmonyPatch(typeof(ENetClient), "ConnectToHost")]
     internal class ENetClientConnectToHostPatch
@@ -132,7 +132,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
                     if (eNetHandshakeResponse.status == ENetHandshakeStatus.IdCollision)
                     {
                         logger.Warn(
-                            $"NetID:{netId} already occupied, Next try server send new NetID:{eNetHandshakeResponse.newNetId}");
+                            $"NetID:{netId} already occupied, Next try host send new NetID:{eNetHandshakeResponse.newNetId}");
                         return (new NetErrorInfo(NetError.Kicked, selfInitiated: false),
                             eNetHandshakeResponse.newNetId);
                     }

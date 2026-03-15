@@ -12,10 +12,10 @@ using SlayTheSpire2.LAN.Multiplayer.Helpers;
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
 
-namespace SlayTheSpire2.LAN.Multiplayer.Patchs
+namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
 {
     [HarmonyPatch(typeof(NJoinFriendScreen), "_Ready")]
-    internal class NJoinFriendScreenPatch
+    internal class NJoinFriendScreenReadyPatch
     {
         private static void Prefix(NJoinFriendScreen __instance)
         {
@@ -28,11 +28,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
             lanPanel.PatchMarginLeft = 12;
             lanPanel.PatchMarginRight = 12;
 
-            lanPanel.AnchorLeft = 0.5f;
-            lanPanel.AnchorTop = 0.5f;
-            lanPanel.AnchorRight = 0.5f;
-            lanPanel.AnchorBottom = 0.5f;
-
+            lanPanel.SetAnchorsPreset(Control.LayoutPreset.Center);
             lanPanel.OffsetLeft = 450;
             lanPanel.OffsetTop = -338;
             lanPanel.OffsetRight = 790;
@@ -49,8 +45,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
             lanPanel.AddChild(vBoxContainer);
 
             vBoxContainer.Alignment = BoxContainer.AlignmentMode.Center;
-            vBoxContainer.SetAnchorsPreset(Control.LayoutPreset.FullRect);
-            vBoxContainer.Size = new Vector2(350, 676);
+            vBoxContainer.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
             vBoxContainer.AddThemeConstantOverride("separation", 24);
 
             if (__instance.GetNode("TitleLabel").Duplicate() is MegaLabel ipAddressLabel)

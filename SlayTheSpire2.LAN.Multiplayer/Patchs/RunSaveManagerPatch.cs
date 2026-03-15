@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves;
 using MegaCrit.Sts2.Core.Saves.Managers;
 using SlayTheSpire2.LAN.Multiplayer.Helpers;
+using SlayTheSpire2.LAN.Multiplayer.Models;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
@@ -35,8 +36,12 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
                 return;
 
             var value = RunManager.Instance.ToSave(preFinishedRoom);
-            var savePath = RunManager.Instance.NetService.Type.IsMultiplayer()
-                ? RunManager.Instance.NetService.Platform == PlatformType.None
+
+            var isMultiplayer = RunManager.Instance.NetService.Type.IsMultiplayer();
+            var isNonePlatform = RunManager.Instance.NetService.Platform == PlatformType.None;
+
+            var savePath = isMultiplayer
+                ? isNonePlatform
                     ? LanRunSaveManagerHelper.CurrentMultiplayerRunSavePath
                     : Traverse.Create(runSaveManager).Property("CurrentMultiplayerRunSavePath").GetValue<string>()
                 : Traverse.Create(runSaveManager).Property("CurrentRunSavePath").GetValue<string>();
@@ -54,6 +59,25 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
 
             stream.Seek(0L, SeekOrigin.Begin);
             await saveStore.WriteFileAsync(savePath, stream.ToArray());
+
+            if (isMultiplayer && isNonePlatform)
+            {
+                using var playerNamesStream = new MemoryStream();
+                if (!forceSynchronous)
+                {
+                    await JsonSerializer.SerializeAsync(playerNamesStream, LanPlayerNameHelper.PlayerNameDictionary,
+                        LanPlayerNamesContext.Default.LanPlayerNames, CancellationToken.None);
+                }
+                else
+                {
+                    await JsonSerializer.SerializeAsync(playerNamesStream, LanPlayerNameHelper.PlayerNameDictionary,
+                        LanPlayerNamesContext.Default.LanPlayerNames);
+                }
+
+                playerNamesStream.Seek(0L, SeekOrigin.Begin);
+                await saveStore.WriteFileAsync(LanRunSaveManagerHelper.CurrentMultiplayerRunPlayerNamesPath,
+                    playerNamesStream.ToArray());
+            }
 
             saved?.Invoke();
         }

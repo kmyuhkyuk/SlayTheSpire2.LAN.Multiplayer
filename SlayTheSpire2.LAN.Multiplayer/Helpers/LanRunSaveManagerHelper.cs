@@ -1,9 +1,11 @@
-﻿using HarmonyLib;
+﻿using System.Text.Json;
+using HarmonyLib;
 using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves;
 using MegaCrit.Sts2.Core.Saves.Managers;
 using MegaCrit.Sts2.Core.Saves.Migrations;
+using SlayTheSpire2.LAN.Multiplayer.Models;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable ClassNeverInstantiated.Global
@@ -23,6 +25,9 @@ namespace SlayTheSpire2.LAN.Multiplayer.Helpers
         public static string CurrentMultiplayerRunSavePath =>
             RunSaveManager.GetRunSavePath(ProfileIdProvider.CurrentProfileId, "current_lan_run_mp.save");
 
+        public static string CurrentMultiplayerRunPlayerNamesPath =>
+            RunSaveManager.GetRunSavePath(ProfileIdProvider.CurrentProfileId, "current_lan_run_mp_player_names.json");
+
         public static bool HasMultiplayerRunSave => SaveStore.FileExists(CurrentMultiplayerRunSavePath);
 
         public static ReadSaveResult<SerializableRun> LoadAndCanonicalizeMultiplayerRunSave(ulong localPlayerId)
@@ -33,6 +38,14 @@ namespace SlayTheSpire2.LAN.Multiplayer.Helpers
                 try
                 {
                     var data = RunManager.CanonicalizeSave(readSaveResult.SaveData, localPlayerId);
+                    var playerNamesJson = SaveStore.ReadFile(CurrentMultiplayerRunPlayerNamesPath);
+                    if (!string.IsNullOrEmpty(playerNamesJson))
+                    {
+                        LanPlayerNameHelper.PlayerNameDictionary =
+                            JsonSerializer.Deserialize<LanPlayerNames>(playerNamesJson) ?? new LanPlayerNames();
+                    }
+
+                    LanPlayerNameHelper.SetHostPlayerName();
                     return new ReadSaveResult<SerializableRun>(data, ReadSaveStatus.Success);
                 }
                 catch (Exception value)
@@ -76,6 +89,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Helpers
         public static void DeleteCurrentMultiplayerRun()
         {
             SaveStore.DeleteFile(CurrentMultiplayerRunSavePath);
+            SaveStore.DeleteFile(CurrentMultiplayerRunPlayerNamesPath);
         }
 
         public static void RenameBrokenMultiplayerRunSave(ReadSaveStatus status)
