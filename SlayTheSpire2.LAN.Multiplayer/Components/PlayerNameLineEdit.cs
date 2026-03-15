@@ -9,7 +9,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
         [GeneratedRegex(@"[\x00-\x1F\x7F<>:""/\\|?*\x0B\x0C\x0D&;`#$%^+={}]")]
         private static partial Regex InvalidCharsRegex();
 
-        public bool IsInvalid => !GetPlayerNameIsInvalid(Text);
+        public bool IsInvalid => GetPlayerNameIsInvalid(Text);
 
         public bool IsEmpty => string.IsNullOrEmpty(Text);
 
