@@ -5,7 +5,10 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
 using MegaCrit.Sts2.Core.Runs;
+using MegaCrit.Sts2.Core.Saves;
+using SlayTheSpire2.LAN.Multiplayer.Components;
 using SlayTheSpire2.LAN.Multiplayer.Helpers;
+using SlayTheSpire2.LAN.Multiplayer.Services;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
@@ -30,11 +33,20 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
                 {
                     var traverse = Traverse.Create(__instance);
 
-                    var settingsModel = SettingsHelper.Instance.SettingsModel;
+                    var settingsModel = SettingsService.Instance.SettingsModel;
 
-                    LanHostHelper.StartHost(GameMode.Standard, traverse.Field("_loadingOverlay").GetValue<Control>(),
-                        traverse.Field("_stack").GetValue<NSubmenuStack>(),
-                        settingsModel.HostPort, settingsModel.HostMaxPlayers);
+                    var stack = traverse.Field("_stack").GetValue<NSubmenuStack>();
+
+                    if (SaveManager.Instance.Progress.NumberOfRuns > 0)
+                    {
+                        stack.PushSubmenuType<LanMultiplayerHostSubmenu>();
+                    }
+                    else
+                    {
+                        LanHostHelper.StartHost(GameMode.Standard,
+                            traverse.Field("_loadingOverlay").GetValue<Control>(), stack, settingsModel.HostPort,
+                            settingsModel.HostMaxPlayers);
+                    }
                 }));
             lanHostButton.SetIconAndLocalization("HOST");
             var lanHostTitle = Traverse.Create(lanHostButton).Field("_title").GetValue<MegaLabel>();
@@ -42,7 +54,9 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
 
             NSubmenuButtonDuplicateMaterial(lanHostButton);
 
-            NMultiplayerSubmenuButtonHelpers.LanHostButton = lanHostButton;
+            var lanMultiplayerSubmenuButtonService = LanMultiplayerSubmenuButtonService.Instance;
+
+            lanMultiplayerSubmenuButtonService.LanHostButton = lanHostButton;
 
             if (buttonContainerNode.GetNode("LoadButton").Duplicate() is not NSubmenuButton lanLoadButton)
                 return;
@@ -55,7 +69,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
                 {
                     var traverse = Traverse.Create(__instance);
 
-                    var settingsModel = SettingsHelper.Instance.SettingsModel;
+                    var settingsModel = SettingsService.Instance.SettingsModel;
 
                     LanHostHelper.StartLoad(lanLoadButton, traverse.Field("_loadingOverlay").GetValue<Control>(),
                         traverse.Field("_stack").GetValue<NSubmenuStack>(),
@@ -67,7 +81,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
 
             NSubmenuButtonDuplicateMaterial(lanLoadButton);
 
-            NMultiplayerSubmenuButtonHelpers.LanLoadButton = lanLoadButton;
+            lanMultiplayerSubmenuButtonService.LanLoadButton = lanLoadButton;
 
             if (buttonContainerNode.GetNode("AbandonButton").Duplicate() is not NSubmenuButton lanAbandonButton)
                 return;
@@ -89,7 +103,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
 
             NSubmenuButtonDuplicateMaterial(lanAbandonButton);
 
-            NMultiplayerSubmenuButtonHelpers.LanAbandonButton = lanAbandonButton;
+            lanMultiplayerSubmenuButtonService.LanAbandonButton = lanAbandonButton;
         }
 
         private static void NSubmenuButtonDuplicateMaterial(NSubmenuButton nSubmenuButton)
@@ -108,20 +122,24 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
     {
         private static void Postfix()
         {
-            if (NMultiplayerSubmenuButtonHelpers.LanHostButton != null)
+            var lanMultiplayerSubmenuButtonService = LanMultiplayerSubmenuButtonService.Instance;
+
+            if (lanMultiplayerSubmenuButtonService.LanHostButton != null)
             {
-                NMultiplayerSubmenuButtonHelpers.LanHostButton.Visible = !LanRunSaveManagerHelper.HasMultiplayerRunSave;
+                lanMultiplayerSubmenuButtonService.LanHostButton.Visible =
+                    !LanRunSaveManagerService.Instance.HasMultiplayerRunSave;
             }
 
-            if (NMultiplayerSubmenuButtonHelpers.LanLoadButton != null)
+            if (lanMultiplayerSubmenuButtonService.LanLoadButton != null)
             {
-                NMultiplayerSubmenuButtonHelpers.LanLoadButton.Visible = LanRunSaveManagerHelper.HasMultiplayerRunSave;
+                lanMultiplayerSubmenuButtonService.LanLoadButton.Visible =
+                    LanRunSaveManagerService.Instance.HasMultiplayerRunSave;
             }
 
-            if (NMultiplayerSubmenuButtonHelpers.LanAbandonButton != null)
+            if (lanMultiplayerSubmenuButtonService.LanAbandonButton != null)
             {
-                NMultiplayerSubmenuButtonHelpers.LanAbandonButton.Visible =
-                    LanRunSaveManagerHelper.HasMultiplayerRunSave;
+                lanMultiplayerSubmenuButtonService.LanAbandonButton.Visible =
+                    LanRunSaveManagerService.Instance.HasMultiplayerRunSave;
             }
         }
     }

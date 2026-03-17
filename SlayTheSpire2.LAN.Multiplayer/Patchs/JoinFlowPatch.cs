@@ -3,8 +3,8 @@ using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Multiplayer.Connection;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Multiplayer.Messages.Lobby;
-using SlayTheSpire2.LAN.Multiplayer.Helpers;
 using SlayTheSpire2.LAN.Multiplayer.Models;
+using SlayTheSpire2.LAN.Multiplayer.Services;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
@@ -27,10 +27,12 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
             if (joinFlow.NetService == null)
                 return result;
 
-            joinFlow.NetService.RegisterMessageHandler<LanPlayerNameResponseMessage>(LanPlayerNameHelper
+            var lanPlayerNameService = LanPlayerNameService.Instance;
+
+            joinFlow.NetService.RegisterMessageHandler<LanPlayerNameResponseMessage>(lanPlayerNameService
                 .HandleLanPlayerNameResponseMessage);
 
-            await LanPlayerNameHelper.AttemptPlayerName(joinFlow.NetService);
+            await lanPlayerNameService.AttemptPlayerName(joinFlow.NetService);
 
             return result;
         }
@@ -52,10 +54,12 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
             if (joinFlow.NetService == null)
                 return result;
 
-            joinFlow.NetService.RegisterMessageHandler<LanPlayerNameResponseMessage>(LanPlayerNameHelper
+            var lanPlayerNameService = LanPlayerNameService.Instance;
+
+            joinFlow.NetService.RegisterMessageHandler<LanPlayerNameResponseMessage>(lanPlayerNameService
                 .HandleLanPlayerNameResponseMessage);
 
-            await LanPlayerNameHelper.AttemptPlayerName(joinFlow.NetService);
+            await lanPlayerNameService.AttemptPlayerName(joinFlow.NetService);
 
             return result;
         }
@@ -77,10 +81,12 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
             if (joinFlow.NetService == null)
                 return result;
 
-            joinFlow.NetService.RegisterMessageHandler<LanPlayerNameResponseMessage>(LanPlayerNameHelper
+            var lanPlayerNameService = LanPlayerNameService.Instance;
+
+            joinFlow.NetService.RegisterMessageHandler<LanPlayerNameResponseMessage>(lanPlayerNameService
                 .HandleLanPlayerNameResponseMessage);
 
-            await LanPlayerNameHelper.AttemptPlayerName(joinFlow.NetService);
+            await lanPlayerNameService.AttemptPlayerName(joinFlow.NetService);
 
             return result;
         }
@@ -95,7 +101,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
                 new ClientConnectionFailedException(
                     $"Unexpectedly disconnected from host while joining. Reason: {info.GetReason()}", info);
 
-            var lanPlayerNameCompletion = LanPlayerNameHelper.LanPlayerNameCompletion;
+            var lanPlayerNameCompletion = LanPlayerNameService.Instance.LanPlayerNameCompletion;
 
             if (lanPlayerNameCompletion?.Task is { IsCompleted: false })
             {
@@ -109,7 +115,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
     {
         private static void Postfix()
         {
-            var lanPlayerNameCompletion = LanPlayerNameHelper.LanPlayerNameCompletion;
+            var lanPlayerNameCompletion = LanPlayerNameService.Instance.LanPlayerNameCompletion;
 
             if (lanPlayerNameCompletion?.Task is { IsCompleted: false })
             {

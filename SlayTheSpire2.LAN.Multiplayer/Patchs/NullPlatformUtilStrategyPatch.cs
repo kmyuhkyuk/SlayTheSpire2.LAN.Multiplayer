@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 using MegaCrit.Sts2.Core.Platform.Null;
-using SlayTheSpire2.LAN.Multiplayer.Helpers;
+using SlayTheSpire2.LAN.Multiplayer.Services;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
@@ -24,7 +24,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
                 }
             }
 
-            if (LanPlayerNameHelper.PlayerNameDictionary.TryGetValue(playerId, out var playerName))
+            if (LanPlayerNameService.Instance.PlayerNames.TryGetValue(playerId, out var playerName))
             {
                 __result = playerName;
                 return false;

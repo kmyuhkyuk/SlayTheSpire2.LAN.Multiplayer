@@ -7,7 +7,7 @@ using MegaCrit.Sts2.Core.Multiplayer.Connection;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
 using SlayTheSpire2.LAN.Multiplayer.Components;
-using SlayTheSpire2.LAN.Multiplayer.Helpers;
+using SlayTheSpire2.LAN.Multiplayer.Services;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
@@ -61,7 +61,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
 
             vBoxContainer.AddChild(addressLineEdit);
 
-            addressLineEdit.Text = SettingsHelper.Instance.SettingsModel.IPAddress;
+            addressLineEdit.Text = SettingsService.Instance.SettingsModel.IPAddress;
             addressLineEdit.Alignment = HorizontalAlignment.Center;
             addressLineEdit.CustomMinimumSize = new Vector2(300, 50);
             addressLineEdit.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
@@ -83,8 +83,8 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
                     if (!addressInfo.IsValid)
                         return;
 
-                    SettingsHelper.Instance.SettingsModel.IPAddress = addressLineEdit.Text;
-                    SettingsHelper.Instance.WriteSettings();
+                    SettingsService.Instance.SettingsModel.IPAddress = addressLineEdit.Text;
+                    SettingsService.Instance.WriteSettings();
 
                     ushort port = 33771;
 
@@ -98,7 +98,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
                     {
                         TaskHelper.RunSafely(
                             __instance.JoinGameAsync(new ENetClientConnectionInitializer(
-                                SettingsHelper.Instance.SettingsModel.NetId, addressInfo.Address, port)));
+                                SettingsService.Instance.SettingsModel.NetId, addressInfo.Address, port)));
                     }
                 }));
 

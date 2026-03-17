@@ -2,20 +2,20 @@
 using MegaCrit.Sts2.Core.Saves;
 using SlayTheSpire2.LAN.Multiplayer.Models;
 
-namespace SlayTheSpire2.LAN.Multiplayer.Helpers
+namespace SlayTheSpire2.LAN.Multiplayer.Services
 {
-    internal class SettingsHelper
+    internal class SettingsService
     {
-        private static readonly Lazy<SettingsHelper> Lazy = new(() => new SettingsHelper());
+        private static readonly Lazy<SettingsService> Lazy = new(() => new SettingsService());
 
-        public static SettingsHelper Instance => Lazy.Value;
+        public static SettingsService Instance => Lazy.Value;
 
         public readonly SettingsModel SettingsModel;
 
         private readonly GodotFileIo _modsDir =
             new(Path.Combine(UserDataPathProvider.GetAccountScopedBasePath(null), "mods"));
 
-        private SettingsHelper()
+        private SettingsService()
         {
             if (_modsDir.FileExists("lan_settings.json"))
             {

@@ -6,7 +6,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Models
 {
     public struct LanPlayerNameResponseMessage : INetMessage
     {
-        public LanPlayerNames playerNameDictionary;
+        public PlayerNames playerNames;
 
         public bool ShouldBroadcast => false;
         public NetTransferMode Mode => NetTransferMode.Reliable;
@@ -14,8 +14,8 @@ namespace SlayTheSpire2.LAN.Multiplayer.Models
 
         public void Serialize(PacketWriter writer)
         {
-            writer.WriteInt(playerNameDictionary.Count);
-            foreach (var keyValue in playerNameDictionary)
+            writer.WriteInt(playerNames.Count);
+            foreach (var keyValue in playerNames)
             {
                 writer.WriteULong(keyValue.Key);
                 writer.WriteString(keyValue.Value);
@@ -25,10 +25,10 @@ namespace SlayTheSpire2.LAN.Multiplayer.Models
         public void Deserialize(PacketReader reader)
         {
             var count = reader.ReadInt();
-            playerNameDictionary = new LanPlayerNames();
+            playerNames = new PlayerNames();
             for (var i = 0; i < count; i++)
             {
-                playerNameDictionary.Add(reader.ReadULong(), reader.ReadString());
+                playerNames.Add(reader.ReadULong(), reader.ReadString());
             }
         }
     }

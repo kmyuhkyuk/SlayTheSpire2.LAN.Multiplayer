@@ -2,7 +2,7 @@
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Nodes.Screens.Settings;
 using SlayTheSpire2.LAN.Multiplayer.Components;
-using SlayTheSpire2.LAN.Multiplayer.Helpers;
+using SlayTheSpire2.LAN.Multiplayer.Services;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
@@ -50,11 +50,11 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
                 hostPortLineEdit.Step = 1;
                 hostPortLineEdit.MinValue = 0;
                 hostPortLineEdit.MaxValue = 65535;
-                hostPortLineEdit.Value = SettingsHelper.Instance.SettingsModel.HostPort;
+                hostPortLineEdit.Value = SettingsService.Instance.SettingsModel.HostPort;
                 hostPortLineEdit.ValueChanged += value =>
                 {
-                    SettingsHelper.Instance.SettingsModel.HostPort = (ushort)value;
-                    SettingsHelper.Instance.WriteSettings();
+                    SettingsService.Instance.SettingsModel.HostPort = (ushort)value;
+                    SettingsService.Instance.WriteSettings();
                 };
 
                 hostPortLabel.Text = "Host Port";
@@ -90,11 +90,11 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
 
                 hostMaxPlayersInput.Step = 1;
                 hostMaxPlayersInput.MinValue = 2;
-                hostMaxPlayersInput.Value = SettingsHelper.Instance.SettingsModel.HostMaxPlayers;
+                hostMaxPlayersInput.Value = SettingsService.Instance.SettingsModel.HostMaxPlayers;
                 hostMaxPlayersInput.ValueChanged += value =>
                 {
-                    SettingsHelper.Instance.SettingsModel.HostMaxPlayers = (int)value;
-                    SettingsHelper.Instance.WriteSettings();
+                    SettingsService.Instance.SettingsModel.HostMaxPlayers = (int)value;
+                    SettingsService.Instance.WriteSettings();
                 };
 
                 hostMaxPlayersLabel.Text = "Host Max Players";
@@ -129,14 +129,14 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
                 playerNameInput.Alignment = HorizontalAlignment.Center;
 
                 playerNameInput.MaxLength = 16;
-                playerNameInput.Text = SettingsHelper.Instance.SettingsModel.PlayerName;
+                playerNameInput.Text = SettingsService.Instance.SettingsModel.PlayerName;
                 playerNameInput.TextChanged += value =>
                 {
                     if (playerNameInput.IsEmpty || !playerNameInput.IsInvalid)
                     {
-                        SettingsHelper.Instance.SettingsModel.PlayerName = value;
-                        LanPlayerNameHelper.SetHostPlayerName();
-                        SettingsHelper.Instance.WriteSettings();
+                        SettingsService.Instance.SettingsModel.PlayerName = value;
+                        LanPlayerNameService.Instance.SetHostPlayerName();
+                        SettingsService.Instance.WriteSettings();
                     }
                 };
 
@@ -174,11 +174,11 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
                 netIdInput.Step = 1;
                 netIdInput.MinValue = 2;
                 netIdInput.MaxValue = ulong.MaxValue;
-                netIdInput.Value = SettingsHelper.Instance.SettingsModel.NetId;
+                netIdInput.Value = SettingsService.Instance.SettingsModel.NetId;
                 netIdInput.ValueChanged += value =>
                 {
-                    SettingsHelper.Instance.SettingsModel.NetId = (ulong)value;
-                    SettingsHelper.Instance.WriteSettings();
+                    SettingsService.Instance.SettingsModel.NetId = (ulong)value;
+                    SettingsService.Instance.WriteSettings();
                 };
 
                 netIdLabel.Text = "NetID";

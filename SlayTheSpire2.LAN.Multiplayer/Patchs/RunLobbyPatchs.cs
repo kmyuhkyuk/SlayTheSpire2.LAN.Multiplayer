@@ -5,8 +5,8 @@ using MegaCrit.Sts2.Core.Multiplayer.Game.Lobby;
 using MegaCrit.Sts2.Core.Platform;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves;
-using SlayTheSpire2.LAN.Multiplayer.Helpers;
 using SlayTheSpire2.LAN.Multiplayer.Models;
+using SlayTheSpire2.LAN.Multiplayer.Services;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
@@ -34,14 +34,16 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
         {
             if (netService.Platform == PlatformType.None)
             {
-                LanPlayerNameHelper.NetService = netService;
+                var lanPlayerNameService = LanPlayerNameService.Instance;
 
-                netService.RegisterMessageHandler<LanPlayerNameResponseMessage>(LanPlayerNameHelper
+                lanPlayerNameService.NetService = netService;
+
+                netService.RegisterMessageHandler<LanPlayerNameResponseMessage>(lanPlayerNameService
                     .HandleLanPlayerNameResponseMessage);
 
                 if (netService.Type == NetGameType.Host)
                 {
-                    netService.RegisterMessageHandler<LanPlayerNameRequestMessage>(LanPlayerNameHelper
+                    netService.RegisterMessageHandler<LanPlayerNameRequestMessage>(lanPlayerNameService
                         .HandleLanPlayerNameRequestMessage);
                 }
             }
@@ -53,28 +55,55 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
     {
         private static IEnumerable<MethodBase> TargetMethods()
         {
-            yield return typeof(StartRunLobby).GetMethod("CleanUp", BindingFlags.Instance | BindingFlags.Public)!;
-            yield return typeof(RunLobby).GetMethod("Dispose", BindingFlags.Instance | BindingFlags.Public)!;
-            yield return typeof(LoadRunLobby).GetMethod("CleanUp", BindingFlags.Instance | BindingFlags.Public)!;
+            const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public;
+
+            yield return typeof(StartRunLobby).GetMethod("CleanUp", flags)!;
+            yield return typeof(LoadRunLobby).GetMethod("CleanUp", flags)!;
         }
 
-        private static void Prefix(object __instance)
+        private static void Prefix(object __instance, bool disconnectSession)
         {
-            var netService = __instance is StartRunLobby or LoadRunLobby
-                ? Traverse.Create(__instance).Property("NetService").GetValue<INetGameService>()
-                : Traverse.Create(__instance).Field("_netService").GetValue<INetGameService>();
+            var netService = Traverse.Create(__instance).Property("NetService").GetValue<INetGameService>();
 
             if (netService.Platform == PlatformType.None)
             {
-                LanPlayerNameHelper.SetDefaultPlayerNameDictionary();
+                var lanPlayerNameService = LanPlayerNameService.Instance;
 
-                netService.UnregisterMessageHandler<LanPlayerNameResponseMessage>(LanPlayerNameHelper
+                if (disconnectSession)
+                {
+                    lanPlayerNameService.SetDefaultPlayerNames();
+                }
+
+                netService.UnregisterMessageHandler<LanPlayerNameResponseMessage>(lanPlayerNameService
                     .HandleLanPlayerNameResponseMessage);
 
                 if (netService.Type == NetGameType.Host)
                 {
-                    netService.UnregisterMessageHandler<LanPlayerNameRequestMessage>(LanPlayerNameHelper
+                    netService.UnregisterMessageHandler<LanPlayerNameRequestMessage>(lanPlayerNameService
                         .HandleLanPlayerNameRequestMessage);
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(RunLobby), "Dispose")]
+        internal class RunLobbyDisposePatch
+        {
+            private static void Prefix(INetGameService ____netService)
+            {
+                if (____netService.Platform == PlatformType.None)
+                {
+                    var lanPlayerNameService = LanPlayerNameService.Instance;
+
+                    lanPlayerNameService.SetDefaultPlayerNames();
+
+                    ____netService.UnregisterMessageHandler<LanPlayerNameResponseMessage>(lanPlayerNameService
+                        .HandleLanPlayerNameResponseMessage);
+
+                    if (____netService.Type == NetGameType.Host)
+                    {
+                        ____netService.UnregisterMessageHandler<LanPlayerNameRequestMessage>(lanPlayerNameService
+                            .HandleLanPlayerNameRequestMessage);
+                    }
                 }
             }
         }
