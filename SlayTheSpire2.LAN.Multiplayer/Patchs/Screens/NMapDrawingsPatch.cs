@@ -2,7 +2,7 @@
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
-using SlayTheSpire2.LAN.Multiplayer.Helpers;
+using SlayTheSpire2.LAN.Multiplayer.Services;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
@@ -14,7 +14,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
     {
         private static void Postfix(Player player, Line2D __result)
         {
-            if (LanMapDrawingsHelper.DisableDrawingHashSet.Contains(player.NetId))
+            if (LanMapDrawingsService.Instance.DisableDrawingHashSet.Contains(player.NetId))
             {
                 __result.Visible = false;
             }

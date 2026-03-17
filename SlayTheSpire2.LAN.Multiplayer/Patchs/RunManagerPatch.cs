@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 using MegaCrit.Sts2.Core.Runs;
-using SlayTheSpire2.LAN.Multiplayer.Helpers;
+using SlayTheSpire2.LAN.Multiplayer.Services;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
@@ -12,8 +12,8 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
     {
         private static void Postfix()
         {
-            LanMapDrawingsHelper.DisableDrawingHashSet.Clear();
-            LanPlayerNameHelper.SetDefaultPlayerNameDictionary();
+            LanMapDrawingsService.Instance.DisableDrawingHashSet.Clear();
+            LanPlayerNameService.Instance.SetDefaultPlayerNames();
         }
     }
 }

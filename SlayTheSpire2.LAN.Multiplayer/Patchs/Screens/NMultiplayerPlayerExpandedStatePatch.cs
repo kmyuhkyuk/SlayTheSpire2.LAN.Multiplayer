@@ -7,7 +7,7 @@ using MegaCrit.Sts2.Core.Nodes.Multiplayer;
 using MegaCrit.Sts2.Core.Nodes.Screens.CardLibrary;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
 using MegaCrit.Sts2.Core.Runs;
-using SlayTheSpire2.LAN.Multiplayer.Helpers;
+using SlayTheSpire2.LAN.Multiplayer.Services;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
@@ -21,32 +21,30 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
         {
             if (____player.NetId != RunManager.Instance.NetService.NetId)
             {
-                var lanPanel = new HBoxContainer { Name = "LANPanel" };
-                __instance.AddChild(lanPanel);
-
-                lanPanel.AnchorLeft = 0.5f;
-                lanPanel.AnchorTop = 0;
-                lanPanel.AnchorRight = 0.5f;
-                lanPanel.AnchorBottom = 0;
-
-                lanPanel.OffsetLeft = -162;
-                lanPanel.OffsetTop = 100;
-                lanPanel.OffsetRight = 162;
-                lanPanel.OffsetBottom = 100;
+                var container = __instance.GetNode("ScreenContents/Container");
 
                 var disableDrawing = PreloadManager.Cache
                     .GetScene(SceneHelper.GetScenePath("screens/card_library/card_library_tickbox"))
                     .Instantiate<Control>();
 
-                if (disableDrawing is NLibraryStatTickbox cardLibraryTickBox)
+                if (disableDrawing is NLibraryStatTickbox cardLibraryTickBox &&
+                    container.GetNode("MarginContainer") is MarginContainer marginContainer)
                 {
                     disableDrawing.Name = "DisableDrawing";
 
-                    lanPanel.AddChild(cardLibraryTickBox);
+                    container.AddChild(cardLibraryTickBox);
+                    container.MoveChild(cardLibraryTickBox, 0);
+
+                    marginContainer.RemoveThemeConstantOverride("margin_top");
+
+                    cardLibraryTickBox.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
 
                     cardLibraryTickBox.SetLabel("Disable drawing");
 
-                    cardLibraryTickBox.IsTicked = LanMapDrawingsHelper.DisableDrawingHashSet.Contains(____player.NetId);
+                    var lanMapDrawingsService = LanMapDrawingsService.Instance;
+
+                    cardLibraryTickBox.IsTicked =
+                        lanMapDrawingsService.DisableDrawingHashSet.Contains(____player.NetId);
 
                     cardLibraryTickBox.Toggled += tickBox =>
                     {
@@ -64,7 +62,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
                                 }
                             }
 
-                            LanMapDrawingsHelper.DisableDrawingHashSet.Add(____player.NetId);
+                            lanMapDrawingsService.DisableDrawingHashSet.Add(____player.NetId);
                         }
                         else
                         {
@@ -76,7 +74,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
                                 }
                             }
 
-                            LanMapDrawingsHelper.DisableDrawingHashSet.Remove(____player.NetId);
+                            lanMapDrawingsService.DisableDrawingHashSet.Remove(____player.NetId);
                         }
                     };
                 }

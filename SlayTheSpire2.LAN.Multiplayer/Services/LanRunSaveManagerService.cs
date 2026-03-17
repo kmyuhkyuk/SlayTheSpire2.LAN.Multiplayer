@@ -7,45 +7,55 @@ using MegaCrit.Sts2.Core.Saves.Managers;
 using MegaCrit.Sts2.Core.Saves.Migrations;
 using SlayTheSpire2.LAN.Multiplayer.Models;
 
+// ReSharper disable MemberCanBeMadeStatic.Local
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable ClassNeverInstantiated.Global
 
-namespace SlayTheSpire2.LAN.Multiplayer.Helpers
+namespace SlayTheSpire2.LAN.Multiplayer.Services
 {
-    internal class LanRunSaveManagerHelper
+    internal class LanRunSaveManagerService
     {
-        public static ISaveStore SaveStore =>
-            Traverse.Create(SaveManager.Instance).Field("_saveStore").GetValue<ISaveStore>();
+        private static readonly Lazy<LanRunSaveManagerService> Lazy = new(() => new LanRunSaveManagerService());
 
-        public static MigrationManager MigrationManager => Traverse.Create(SaveManager.Instance)
-            .Field("_migrationManager").GetValue<MigrationManager>();
+        public static LanRunSaveManagerService Instance => Lazy.Value;
 
-        public static IProfileIdProvider ProfileIdProvider => SaveManager.Instance;
+        private SaveManager ProfileIdProvider => SaveManager.Instance;
 
-        public static string CurrentMultiplayerRunSavePath =>
+        private ISaveStore SaveStore => Traverse.Create(ProfileIdProvider).Field("_saveStore").GetValue<ISaveStore>();
+
+        private MigrationManager MigrationManager => Traverse.Create(ProfileIdProvider).Field("_migrationManager")
+            .GetValue<MigrationManager>();
+
+        public string CurrentMultiplayerRunSavePath =>
             RunSaveManager.GetRunSavePath(ProfileIdProvider.CurrentProfileId, "current_lan_run_mp.save");
 
-        public static string CurrentMultiplayerRunPlayerNamesPath =>
+        public string CurrentMultiplayerRunPlayerNamesPath =>
             RunSaveManager.GetRunSavePath(ProfileIdProvider.CurrentProfileId, "current_lan_run_mp_player_names.json");
 
-        public static bool HasMultiplayerRunSave => SaveStore.FileExists(CurrentMultiplayerRunSavePath);
+        public bool HasMultiplayerRunSave => SaveStore.FileExists(CurrentMultiplayerRunSavePath);
 
-        public static ReadSaveResult<SerializableRun> LoadAndCanonicalizeMultiplayerRunSave(ulong localPlayerId)
+        private LanRunSaveManagerService()
+        {
+        }
+
+        public ReadSaveResult<SerializableRun> LoadAndCanonicalizeMultiplayerRunSave(ulong localPlayerId)
         {
             var readSaveResult = LoadMultiplayerRunSave();
             if (readSaveResult is { Success: true, SaveData: not null })
             {
                 try
                 {
+                    var lanPlayerNameService = LanPlayerNameService.Instance;
+
                     var data = RunManager.CanonicalizeSave(readSaveResult.SaveData, localPlayerId);
                     var playerNamesJson = SaveStore.ReadFile(CurrentMultiplayerRunPlayerNamesPath);
                     if (!string.IsNullOrEmpty(playerNamesJson))
                     {
-                        LanPlayerNameHelper.PlayerNameDictionary =
-                            JsonSerializer.Deserialize<LanPlayerNames>(playerNamesJson) ?? new LanPlayerNames();
+                        lanPlayerNameService.PlayerNames = JsonSerializer.Deserialize<PlayerNames>(playerNamesJson) ??
+                                                           new PlayerNames();
                     }
 
-                    LanPlayerNameHelper.SetHostPlayerName();
+                    lanPlayerNameService.SetHostPlayerName();
                     return new ReadSaveResult<SerializableRun>(data, ReadSaveStatus.Success);
                 }
                 catch (Exception value)
@@ -60,7 +70,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Helpers
             return readSaveResult;
         }
 
-        public static ReadSaveResult<SerializableRun> LoadMultiplayerRunSave()
+        public ReadSaveResult<SerializableRun> LoadMultiplayerRunSave()
         {
             var readSaveResult = MigrationManager.LoadSave<SerializableRun>(CurrentMultiplayerRunSavePath);
             if (readSaveResult.Success)
@@ -86,13 +96,13 @@ namespace SlayTheSpire2.LAN.Multiplayer.Helpers
             return readSaveResult;
         }
 
-        public static void DeleteCurrentMultiplayerRun()
+        public void DeleteCurrentMultiplayerRun()
         {
             SaveStore.DeleteFile(CurrentMultiplayerRunSavePath);
             SaveStore.DeleteFile(CurrentMultiplayerRunPlayerNamesPath);
         }
 
-        public static void RenameBrokenMultiplayerRunSave(ReadSaveStatus status)
+        public void RenameBrokenMultiplayerRunSave(ReadSaveStatus status)
         {
             try
             {
