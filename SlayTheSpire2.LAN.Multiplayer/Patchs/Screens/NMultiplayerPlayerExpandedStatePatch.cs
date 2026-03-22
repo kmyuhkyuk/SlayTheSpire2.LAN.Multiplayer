@@ -17,6 +17,13 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
     [HarmonyPatch(typeof(NMultiplayerPlayerExpandedState), "_Ready")]
     internal class NMultiplayerPlayerExpandedStateReadyPatch
     {
+        [HarmonyReversePatch]
+        [HarmonyPatch(typeof(NMapDrawings), "GetDrawingStateForPlayer")]
+        private static object GetDrawingStateForPlayer(NMapDrawings instance, ulong playerId)
+        {
+            throw new NotImplementedException();
+        }
+
         private static void Prefix(NMultiplayerPlayerExpandedState __instance, Player ____player)
         {
             if (____player.NetId != RunManager.Instance.NetService.NetId)
@@ -48,8 +55,11 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
 
                     cardLibraryTickBox.Toggled += tickBox =>
                     {
-                        var drawingState = Traverse.Create(NMapScreen.Instance?.Drawings)
-                            .Method("GetDrawingStateForPlayer", ____player.NetId).GetValue();
+                        if (NMapScreen.Instance == null)
+                            return;
+
+                        var drawingState = GetDrawingStateForPlayer(NMapScreen.Instance.Drawings, ____player.NetId);
+
                         var drawViewport = Traverse.Create(drawingState).Field("drawViewport").GetValue<SubViewport>();
 
                         if (tickBox.IsTicked)

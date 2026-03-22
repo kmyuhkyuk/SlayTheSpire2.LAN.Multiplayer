@@ -1,5 +1,7 @@
 ﻿using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.addons.mega_text;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Nodes.Screens.Settings;
 using SlayTheSpire2.LAN.Multiplayer.Components;
 using SlayTheSpire2.LAN.Multiplayer.Services;
@@ -12,6 +14,13 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
     [HarmonyPatch(typeof(NSettingsScreen), "_Ready")]
     internal class NSettingsScreenReadyPatch
     {
+        [HarmonyReversePatch]
+        [HarmonyPatch(typeof(NSettingsPanel), "RefreshSize")]
+        private static void RefreshSize(NSettingsPanel instance)
+        {
+            throw new NotImplementedException();
+        }
+
         private static void Prefix(NSettingsScreen __instance)
         {
             var moddingNode = __instance.GetNode("%Modding");
@@ -21,7 +30,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
 
             if (__instance.GetNode("%ModdingDivider").Duplicate() is ColorRect hostPortDivider &&
                 moddingNode.Duplicate() is MarginContainer hostPort &&
-                hostPort.GetNode("Label") is RichTextLabel hostPortLabel)
+                hostPort.GetNode("Label") is MegaRichTextLabel hostPortLabel)
             {
                 hostPortDivider.Name = "HostPortDivider";
 
@@ -40,7 +49,6 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
                 hostPort.Show();
 
                 var hostPortLineEdit = new SpinBox { Name = "HostPortInput" };
-
                 hostPort.AddChild(hostPortLineEdit);
 
                 hostPortLineEdit.CustomMinimumSize = new Vector2(324, 64);
@@ -62,7 +70,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
 
             if (__instance.GetNode("%ModdingDivider").Duplicate() is ColorRect hostMaxPlayersDivider &&
                 moddingNode.Duplicate() is MarginContainer hostMaxPlayers &&
-                hostMaxPlayers.GetNode("Label") is RichTextLabel hostMaxPlayersLabel)
+                hostMaxPlayers.GetNode("Label") is MegaRichTextLabel hostMaxPlayersLabel)
             {
                 hostMaxPlayersDivider.Name = "HostMaxPlayersDivider";
 
@@ -81,7 +89,6 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
                 hostMaxPlayers.Show();
 
                 var hostMaxPlayersInput = new SpinBox { Name = "HostMaxPlayersInput" };
-
                 hostMaxPlayers.AddChild(hostMaxPlayersInput);
 
                 hostMaxPlayersInput.CustomMinimumSize = new Vector2(324, 64);
@@ -102,7 +109,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
 
             if (__instance.GetNode("%ModdingDivider").Duplicate() is ColorRect playerNameDivider &&
                 moddingNode.Duplicate() is MarginContainer playerName &&
-                playerName.GetNode("Label") is RichTextLabel playerNameLabel)
+                playerName.GetNode("Label") is MegaRichTextLabel playerNameLabel)
             {
                 playerNameDivider.Name = "PlayerNameDivider";
 
@@ -120,11 +127,15 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
 
                 playerName.Show();
 
+                var marginContainer = new MarginContainer();
+                playerName.AddChild(marginContainer);
+
+                marginContainer.AddThemeConstantOverride("margin_right", 18);
+
                 var playerNameInput = new PlayerNameLineEdit { Name = "PlayerNameInput" };
+                marginContainer.AddChild(playerNameInput);
 
-                playerName.AddChild(playerNameInput);
-
-                playerNameInput.CustomMinimumSize = new Vector2(324, 64);
+                playerNameInput.CustomMinimumSize = new Vector2(308, 64);
                 playerNameInput.SizeFlagsHorizontal = Control.SizeFlags.ShrinkEnd;
                 playerNameInput.Alignment = HorizontalAlignment.Center;
 
@@ -145,7 +156,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
 
             if (__instance.GetNode("%ModdingDivider").Duplicate() is ColorRect netIdDivider &&
                 moddingNode.Duplicate() is MarginContainer netId &&
-                netId.GetNode("Label") is RichTextLabel netIdLabel)
+                netId.GetNode("Label") is MegaRichTextLabel netIdLabel)
             {
                 netIdDivider.Name = "NetIDDivider";
 
@@ -164,7 +175,6 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
                 netId.Show();
 
                 var netIdInput = new SpinBox { Name = "NetIDInput" };
-
                 netId.AddChild(netIdInput);
 
                 netIdInput.CustomMinimumSize = new Vector2(324, 64);
@@ -186,8 +196,33 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
 
             if (generalSettings is NSettingsPanel nSettingsPanel)
             {
-                Traverse.Create(nSettingsPanel).Method("RefreshSize").GetValue();
+                RefreshSize(nSettingsPanel);
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(NSettingsScreen), "LocalizeLabels")]
+    internal class NSettingsScreenLocalizeLabelsPatch
+    {
+        [HarmonyReversePatch]
+        [HarmonyPatch(typeof(NSettingsScreen), "LocHelper")]
+        private static void LocHelper(Node settingsLineNode, LocString locString)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static void Prefix(NSettingsScreen __instance)
+        {
+            var content = __instance.GetNode<NSettingsPanel>("%GeneralSettings").Content;
+
+            LocHelper(content.GetNode<Node>("HostPort"),
+                new LocString("settings_ui", "SlayTheSpire2.LAN.Multiplayer.HOST_PORT"));
+            LocHelper(content.GetNode<Node>("HostMaxPlayers"),
+                new LocString("settings_ui", "SlayTheSpire2.LAN.Multiplayer.HOST_MAX_PLAYERS"));
+            LocHelper(content.GetNode<Node>("PlayerName"),
+                new LocString("settings_ui", "SlayTheSpire2.LAN.Multiplayer.PLAYER_NAME"));
+            LocHelper(content.GetNode<Node>("NetID"),
+                new LocString("settings_ui", "SlayTheSpire2.LAN.Multiplayer.NET_ID"));
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using Godot;
+using HarmonyLib;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
 using SlayTheSpire2.LAN.Multiplayer.Components;
@@ -15,7 +16,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
         {
             if (type == typeof(LanMultiplayerHostSubmenu))
             {
-                if (LanMultiplayerHostSubmenu.Instance == null)
+                if (!GodotObject.IsInstanceValid(LanMultiplayerHostSubmenu.Instance))
                 {
                     var lanMultiplayerHostSubmenu = LanMultiplayerHostSubmenu.Create();
 

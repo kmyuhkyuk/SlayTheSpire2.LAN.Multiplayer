@@ -32,7 +32,8 @@ namespace SlayTheSpire2.LAN.Multiplayer.Helpers
             {
                 var netService = new NetHostGameService();
                 NetErrorInfo? netErrorInfo = null;
-                netService.StartENetHost(port, maxPlayers);
+                //Add one more max client to send the full lobby message
+                netService.StartENetHost(port, maxPlayers + 1);
                 Log.Info($"HostGame open on port:{port}");
                 if (!netErrorInfo.HasValue)
                 {
@@ -94,7 +95,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Helpers
             {
                 var netService = new NetHostGameService();
                 NetErrorInfo? netErrorInfo = null;
-                netService.StartENetHost(port, maxPlayers);
+                netService.StartENetHost(port, maxPlayers + 1);
                 Log.Info($"HostGame open on port:{port}");
                 if (!netErrorInfo.HasValue)
                 {

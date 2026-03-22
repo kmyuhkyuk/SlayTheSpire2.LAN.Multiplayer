@@ -55,7 +55,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Services
 
                 nVerticalPopup.YesButton.Visible = false;
 
-                return await nGenericPopup.WaitForConfirmation(locString,
+                await nGenericPopup.WaitForConfirmation(locString,
                     new LocString("gameplay_ui", "CONFIRM_LOAD_SAVE.header"),
                     new LocString("gameplay_ui", "CONFIRM_LOAD_SAVE.cancel"),
                     new LocString("gameplay_ui", "CONFIRM_LOAD_SAVE.confirm"));

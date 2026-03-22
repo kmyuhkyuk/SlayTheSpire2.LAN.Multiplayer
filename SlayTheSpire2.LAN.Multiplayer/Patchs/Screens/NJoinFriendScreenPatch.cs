@@ -2,7 +2,6 @@
 using HarmonyLib;
 using MegaCrit.Sts2.addons.mega_text;
 using MegaCrit.Sts2.Core.Helpers;
-using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Multiplayer.Connection;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
@@ -20,7 +19,6 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
         private static void Prefix(NJoinFriendScreen __instance)
         {
             var lanPanel = new NinePatchRect { Name = "LANPanel" };
-
             __instance.AddChild(lanPanel);
 
             lanPanel.PatchMarginTop = 12;
@@ -66,49 +64,37 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
             addressLineEdit.CustomMinimumSize = new Vector2(300, 50);
             addressLineEdit.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
 
-            if (__instance.GetNode<NJoinFriendRefreshButton>("RefreshButton").Duplicate() is NJoinFriendRefreshButton
-                joinButton)
+            var joinButton = JoinButton.Create(__instance.GetNode<NJoinFriendRefreshButton>("RefreshButton"));
+
+            joinButton.Name = "JointButton";
+
+            vBoxContainer.AddChild(joinButton);
+
+            joinButton.Connect(NClickableControl.SignalName.Released, Callable.From<NClickableControl>(_ =>
             {
-                joinButton.Name = "JointButton";
+                var addressInfo = addressLineEdit.GetAddressInfo();
 
-                vBoxContainer.AddChild(joinButton);
+                if (!addressInfo.IsValid)
+                    return;
 
-                joinButton.CustomMinimumSize = new Vector2(150, 50);
-                joinButton.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
+                SettingsService.Instance.SettingsModel.IPAddress = addressLineEdit.Text;
+                SettingsService.Instance.WriteSettings();
 
-                joinButton.Connect(NClickableControl.SignalName.Released, Callable.From<NClickableControl>(_ =>
+                ushort port = 33771;
+
+                if (addressInfo.Port.HasValue)
                 {
-                    var addressInfo = addressLineEdit.GetAddressInfo();
+                    port = addressInfo.Port.Value;
+                }
 
-                    if (!addressInfo.IsValid)
-                        return;
-
-                    SettingsService.Instance.SettingsModel.IPAddress = addressLineEdit.Text;
-                    SettingsService.Instance.WriteSettings();
-
-                    ushort port = 33771;
-
-                    if (addressInfo.Port.HasValue)
-                    {
-                        port = addressInfo.Port.Value;
-                    }
-
-                    DisplayServer.WindowSetTitle("Slay The Spire 2 (Client)");
-                    if (addressInfo.Address != null)
-                    {
-                        TaskHelper.RunSafely(
-                            __instance.JoinGameAsync(new ENetClientConnectionInitializer(
-                                SettingsService.Instance.SettingsModel.NetId, addressInfo.Address, port)));
-                    }
-                }));
-
-                joinButton.Material = joinButton.Material.Duplicate() as Material;
-                Traverse.Create(joinButton).Field("_hsv").SetValue(joinButton.Material);
-
-                var joinButtonLabel = joinButton.GetNode<MegaLabel>("Label");
-
-                joinButtonLabel.SetTextAutoSize(new LocString("main_menu_ui", "JOIN.title").GetFormattedText());
-            }
+                DisplayServer.WindowSetTitle("Slay The Spire 2 (Client)");
+                if (addressInfo.Address != null)
+                {
+                    TaskHelper.RunSafely(
+                        __instance.JoinGameAsync(new ENetClientConnectionInitializer(
+                            SettingsService.Instance.SettingsModel.NetId, addressInfo.Address, port)));
+                }
+            }));
         }
     }
 }

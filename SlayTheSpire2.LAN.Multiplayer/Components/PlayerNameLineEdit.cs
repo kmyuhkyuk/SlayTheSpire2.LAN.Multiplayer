@@ -13,8 +13,9 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
 
         public bool IsEmpty => string.IsNullOrEmpty(Text);
 
-        public PlayerNameLineEdit()
+        public override void _Ready()
         {
+            base._Ready();
             TextChanged += OnTextChanged;
         }
 
