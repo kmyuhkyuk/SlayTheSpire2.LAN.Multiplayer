@@ -15,15 +15,10 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
     {
         private static readonly string ScenePath = SceneHelper.GetScenePath("screens/multiplayer_host_submenu");
 
-        public static LanMultiplayerHostSubmenu? Instance { get; private set; }
-
         private Control? _loadingOverlay;
 
-        public new static NMultiplayerHostSubmenu? Create()
+        public new static LanMultiplayerHostSubmenu? Create()
         {
-            if (IsInstanceValid(Instance))
-                return Instance;
-
             if (TestMode.IsOn)
                 return null;
 
@@ -40,8 +35,6 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
             }
 
             multiplayerHostSubmenu.QueueFree();
-
-            Instance = lanMultiplayerHostSubmenu;
 
             return lanMultiplayerHostSubmenu;
         }
