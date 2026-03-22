@@ -90,7 +90,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Helpers
             {
                 Array.Clear(tempBuffer);
 
-                //7-bit VarInt and 1-bit Flag
+                //7-bit variant and 1-bit flag
                 BitSerializationUtilReadBitsPatch.ReadBits(reader.Buffer, reader.BitPosition, tempBuffer, 8);
 
                 SetPacketReaderBitPosition(reader, reader.BitPosition + 8);
