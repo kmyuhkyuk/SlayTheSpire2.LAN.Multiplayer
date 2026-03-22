@@ -28,14 +28,16 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
                         __instance.AddChildSafely(lanMultiplayerHostSubmenu);
 
                         __result = lanMultiplayerHostSubmenu;
+
+                        return false;
                     }
                 }
                 else
                 {
                     __result = lanMultiplayerHostSubmenu;
-                }
 
-                return false;
+                    return false;
+                }
             }
 
             return true;
