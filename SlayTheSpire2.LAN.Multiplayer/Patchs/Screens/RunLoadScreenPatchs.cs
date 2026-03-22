@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Multiplayer.Game.Lobby;
 using MegaCrit.Sts2.Core.Nodes.Screens.CharacterSelect;
 using MegaCrit.Sts2.Core.Nodes.Screens.CustomRun;
 using MegaCrit.Sts2.Core.Nodes.Screens.DailyRun;
+using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
 using MegaCrit.Sts2.Core.Platform;
 using SlayTheSpire2.LAN.Multiplayer.Services;
 
@@ -14,21 +15,52 @@ using SlayTheSpire2.LAN.Multiplayer.Services;
 namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
 {
     [HarmonyPatch]
-    internal class RunLoadScreenInitializePatchs
+    internal class RunLoadScreenInitializeAsHostPatchs
     {
         private static IEnumerable<MethodInfo> TargetMethods()
         {
             const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public;
 
             yield return typeof(NMultiplayerLoadGameScreen).GetMethod("InitializeAsHost", flags)!;
-            yield return typeof(NMultiplayerLoadGameScreen).GetMethod("InitializeAsClient", flags)!;
             yield return typeof(NDailyRunLoadScreen).GetMethod("InitializeAsHost", flags)!;
-            yield return typeof(NDailyRunLoadScreen).GetMethod("InitializeAsClient", flags)!;
             yield return typeof(NCustomRunLoadScreen).GetMethod("InitializeAsHost", flags)!;
+        }
+
+        private static void Prefix(NSubmenu __instance, INetGameService gameService)
+        {
+            if (gameService.Platform == PlatformType.None)
+            {
+                var runScreenService = RunScreenService.Instance;
+
+                switch (__instance)
+                {
+                    case NMultiplayerLoadGameScreen multiplayerLoadGameScreen:
+                        runScreenService.MultiplayerLoadGameScreen = multiplayerLoadGameScreen;
+                        break;
+                    case NDailyRunLoadScreen dailyRunLoadScreen:
+                        runScreenService.DailyRunLoadScreen = dailyRunLoadScreen;
+                        break;
+                    case NCustomRunLoadScreen customRunLoadScreen:
+                        runScreenService.CustomRunLoadScreen = customRunLoadScreen;
+                        break;
+                }
+            }
+        }
+    }
+
+    [HarmonyPatch]
+    internal class RunLoadScreenInitializeAsClientPatchs
+    {
+        private static IEnumerable<MethodInfo> TargetMethods()
+        {
+            const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public;
+
+            yield return typeof(NMultiplayerLoadGameScreen).GetMethod("InitializeAsClient", flags)!;
+            yield return typeof(NDailyRunLoadScreen).GetMethod("InitializeAsClient", flags)!;
             yield return typeof(NCustomRunLoadScreen).GetMethod("InitializeAsClient", flags)!;
         }
 
-        private static void Prefix(object __instance, INetGameService gameService)
+        private static void Prefix(NSubmenu __instance, INetGameService gameService)
         {
             if (gameService.Platform == PlatformType.None)
             {

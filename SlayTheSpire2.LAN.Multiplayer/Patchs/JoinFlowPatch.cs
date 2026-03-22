@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Multiplayer.Connection;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Multiplayer.Messages.Lobby;
+using MegaCrit.Sts2.Core.Platform;
 using SlayTheSpire2.LAN.Multiplayer.Models;
 using SlayTheSpire2.LAN.Multiplayer.Services;
 
@@ -24,7 +25,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
         {
             var result = await clientLobbyJoinResponseMessage;
 
-            if (joinFlow.NetService == null)
+            if (joinFlow.NetService is not { Platform: PlatformType.None })
                 return result;
 
             var lanPlayerNameService = LanPlayerNameService.Instance;
@@ -51,7 +52,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
         {
             var result = await clientLoadJoinResponseMessage;
 
-            if (joinFlow.NetService == null)
+            if (joinFlow.NetService is not { Platform: PlatformType.None })
                 return result;
 
             var lanPlayerNameService = LanPlayerNameService.Instance;
@@ -78,7 +79,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
         {
             var result = await clientRejoinResponseMessage;
 
-            if (joinFlow.NetService == null)
+            if (joinFlow.NetService is not { Platform: PlatformType.None })
                 return result;
 
             var lanPlayerNameService = LanPlayerNameService.Instance;
@@ -95,17 +96,20 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
     [HarmonyPatch(typeof(JoinFlow), "OnDisconnected")]
     internal class JoinFlowOnDisconnectedPatch
     {
-        private static void Postfix(NetErrorInfo info)
+        private static void Postfix(JoinFlow __instance, NetErrorInfo info)
         {
-            var exception =
-                new ClientConnectionFailedException(
-                    $"Unexpectedly disconnected from host while joining. Reason: {info.GetReason()}", info);
-
-            var lanPlayerNameCompletion = LanPlayerNameService.Instance.LanPlayerNameCompletion;
-
-            if (lanPlayerNameCompletion?.Task is { IsCompleted: false })
+            if (__instance.NetService is { Platform: PlatformType.None })
             {
-                lanPlayerNameCompletion.SetException(exception);
+                var lanPlayerNameCompletion = LanPlayerNameService.Instance.LanPlayerNameCompletion;
+
+                if (lanPlayerNameCompletion?.Task is { IsCompleted: false })
+                {
+                    var exception =
+                        new ClientConnectionFailedException(
+                            $"Unexpectedly disconnected from host while joining. Reason: {info.GetReason()}", info);
+
+                    lanPlayerNameCompletion.SetException(exception);
+                }
             }
         }
     }
@@ -113,13 +117,16 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
     [HarmonyPatch(typeof(JoinFlow), "Cancel")]
     internal class JoinFlowCancelPatch
     {
-        private static void Postfix()
+        private static void Postfix(JoinFlow __instance)
         {
-            var lanPlayerNameCompletion = LanPlayerNameService.Instance.LanPlayerNameCompletion;
-
-            if (lanPlayerNameCompletion?.Task is { IsCompleted: false })
+            if (__instance.NetService is { Platform: PlatformType.None })
             {
-                lanPlayerNameCompletion.SetCanceled();
+                var lanPlayerNameCompletion = LanPlayerNameService.Instance.LanPlayerNameCompletion;
+
+                if (lanPlayerNameCompletion?.Task is { IsCompleted: false })
+                {
+                    lanPlayerNameCompletion.SetCanceled();
+                }
             }
         }
     }

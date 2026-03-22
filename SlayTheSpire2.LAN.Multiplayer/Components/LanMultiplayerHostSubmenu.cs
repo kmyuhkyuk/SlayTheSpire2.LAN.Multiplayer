@@ -11,7 +11,7 @@ using SlayTheSpire2.LAN.Multiplayer.Services;
 
 namespace SlayTheSpire2.LAN.Multiplayer.Components
 {
-    internal class LanMultiplayerHostSubmenu : NMultiplayerHostSubmenu
+    internal partial class LanMultiplayerHostSubmenu : NMultiplayerHostSubmenu
     {
         private static readonly string ScenePath = SceneHelper.GetScenePath("screens/multiplayer_host_submenu");
 
@@ -21,7 +21,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
 
         public new static NMultiplayerHostSubmenu? Create()
         {
-            if (Instance != null)
+            if (IsInstanceValid(Instance))
                 return Instance;
 
             if (TestMode.IsOn)

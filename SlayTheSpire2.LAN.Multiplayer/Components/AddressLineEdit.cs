@@ -4,10 +4,11 @@ using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 
 namespace SlayTheSpire2.LAN.Multiplayer.Components
 {
-    internal class AddressLineEdit : NMegaLineEdit
+    internal partial class AddressLineEdit : NMegaLineEdit
     {
         public override void _Ready()
         {
+            base._Ready();
             TextChanged += OnTextChanged;
         }
 

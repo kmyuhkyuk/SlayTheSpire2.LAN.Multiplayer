@@ -18,102 +18,101 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
     [HarmonyPatch(typeof(NMultiplayerSubmenu), "_Ready")]
     internal class NMultiplayerSubmenuReadyPatch
     {
+        [HarmonyReversePatch(HarmonyReversePatchType.Snapshot)]
+        [HarmonyPatch(typeof(NMultiplayerSubmenu), "UpdateButtons")]
+        private static void UpdateButtons(NMultiplayerSubmenu instance)
+        {
+            throw new NotImplementedException();
+        }
+
         private static void Prefix(NMultiplayerSubmenu __instance)
         {
             var buttonContainerNode = __instance.GetNode("ButtonContainer");
 
-            if (buttonContainerNode.GetNode("HostButton").Duplicate() is not NSubmenuButton lanHostButton)
-                return;
+            if (buttonContainerNode.GetNode("HostButton").Duplicate() is NSubmenuButton lanHostButton)
+            {
+                NSubmenuButtonDuplicateMaterial(lanHostButton);
 
-            buttonContainerNode.AddChild(lanHostButton);
-            buttonContainerNode.MoveChild(lanHostButton, 1);
+                buttonContainerNode.AddChild(lanHostButton);
+                buttonContainerNode.MoveChild(lanHostButton, 1);
 
-            lanHostButton.Connect(NClickableControl.SignalName.Released,
-                Callable.From<NButton>(_ =>
-                {
-                    var traverse = Traverse.Create(__instance);
-
-                    var settingsModel = SettingsService.Instance.SettingsModel;
-
-                    var stack = traverse.Field("_stack").GetValue<NSubmenuStack>();
-
-                    if (SaveManager.Instance.Progress.NumberOfRuns > 0)
+                lanHostButton.Connect(NClickableControl.SignalName.Released,
+                    Callable.From<NButton>(_ =>
                     {
-                        stack.PushSubmenuType<LanMultiplayerHostSubmenu>();
-                    }
-                    else
+                        var traverse = Traverse.Create(__instance);
+
+                        var settingsModel = SettingsService.Instance.SettingsModel;
+
+                        var stack = traverse.Field("_stack").GetValue<NSubmenuStack>();
+
+                        if (SaveManager.Instance.Progress.NumberOfRuns > 0)
+                        {
+                            stack.PushSubmenuType<LanMultiplayerHostSubmenu>();
+                        }
+                        else
+                        {
+                            LanHostHelper.StartHost(GameMode.Standard,
+                                traverse.Field("_loadingOverlay").GetValue<Control>(), stack, settingsModel.HostPort,
+                                settingsModel.HostMaxPlayers);
+                        }
+                    }));
+                lanHostButton.SetIconAndLocalization("HOST");
+                var lanHostTitle = Traverse.Create(lanHostButton).Field("_title").GetValue<MegaLabel>();
+                lanHostTitle.Text = $"LAN {lanHostTitle.Text}";
+
+                LanMultiplayerSubmenuButtonService.Instance.LanHostButton = lanHostButton;
+            }
+
+            if (buttonContainerNode.GetNode("LoadButton").Duplicate() is NSubmenuButton lanLoadButton)
+            {
+                NSubmenuButtonDuplicateMaterial(lanLoadButton);
+
+                buttonContainerNode.AddChild(lanLoadButton);
+                buttonContainerNode.MoveChild(lanLoadButton, 2);
+
+                lanLoadButton.Connect(NClickableControl.SignalName.Released,
+                    Callable.From<NButton>(_ =>
                     {
-                        LanHostHelper.StartHost(GameMode.Standard,
-                            traverse.Field("_loadingOverlay").GetValue<Control>(), stack, settingsModel.HostPort,
-                            settingsModel.HostMaxPlayers);
-                    }
-                }));
-            lanHostButton.SetIconAndLocalization("HOST");
-            var lanHostTitle = Traverse.Create(lanHostButton).Field("_title").GetValue<MegaLabel>();
-            lanHostTitle.Text = $"LAN {lanHostTitle.Text}";
+                        var traverse = Traverse.Create(__instance);
 
-            NSubmenuButtonDuplicateMaterial(lanHostButton);
+                        var settingsModel = SettingsService.Instance.SettingsModel;
 
-            var lanMultiplayerSubmenuButtonService = LanMultiplayerSubmenuButtonService.Instance;
+                        LanHostHelper.StartLoad(lanLoadButton, traverse.Field("_loadingOverlay").GetValue<Control>(),
+                            traverse.Field("_stack").GetValue<NSubmenuStack>(),
+                            settingsModel.HostPort, settingsModel.HostMaxPlayers);
+                    }));
+                lanLoadButton.SetIconAndLocalization("MP_LOAD");
+                var lanLoadButtonTitle = Traverse.Create(lanLoadButton).Field("_title").GetValue<MegaLabel>();
+                lanLoadButtonTitle.Text = $"LAN {lanLoadButtonTitle.Text}";
 
-            lanMultiplayerSubmenuButtonService.LanHostButton = lanHostButton;
+                LanMultiplayerSubmenuButtonService.Instance.LanLoadButton = lanLoadButton;
+            }
 
-            if (buttonContainerNode.GetNode("LoadButton").Duplicate() is not NSubmenuButton lanLoadButton)
-                return;
+            if (buttonContainerNode.GetNode("AbandonButton").Duplicate() is NSubmenuButton lanAbandonButton)
+            {
+                NSubmenuButtonDuplicateMaterial(lanAbandonButton);
 
-            buttonContainerNode.AddChild(lanLoadButton);
-            buttonContainerNode.MoveChild(lanLoadButton, 2);
+                buttonContainerNode.AddChild(lanAbandonButton);
+                buttonContainerNode.MoveChild(lanAbandonButton, 3);
 
-            lanLoadButton.Connect(NClickableControl.SignalName.Released,
-                Callable.From<NButton>(_ =>
-                {
-                    var traverse = Traverse.Create(__instance);
+                lanAbandonButton.Connect(NClickableControl.SignalName.Released,
+                    Callable.From<NButton>(_ =>
+                    {
+                        TaskHelper.RunSafely(
+                            LanHostHelper.TryAbandonMultiplayerRun(() => UpdateButtons(__instance)));
+                    }));
+                lanAbandonButton.SetIconAndLocalization("MP_ABANDON");
+                var lanAbandonButtonTitle = Traverse.Create(lanAbandonButton).Field("_title").GetValue<MegaLabel>();
+                lanAbandonButtonTitle.Text = $"LAN {lanAbandonButtonTitle.Text}";
 
-                    var settingsModel = SettingsService.Instance.SettingsModel;
-
-                    LanHostHelper.StartLoad(lanLoadButton, traverse.Field("_loadingOverlay").GetValue<Control>(),
-                        traverse.Field("_stack").GetValue<NSubmenuStack>(),
-                        settingsModel.HostPort, settingsModel.HostMaxPlayers);
-                }));
-            lanLoadButton.SetIconAndLocalization("MP_LOAD");
-            var lanLoadButtonTitle = Traverse.Create(lanLoadButton).Field("_title").GetValue<MegaLabel>();
-            lanLoadButtonTitle.Text = $"LAN {lanLoadButtonTitle.Text}";
-
-            NSubmenuButtonDuplicateMaterial(lanLoadButton);
-
-            lanMultiplayerSubmenuButtonService.LanLoadButton = lanLoadButton;
-
-            if (buttonContainerNode.GetNode("AbandonButton").Duplicate() is not NSubmenuButton lanAbandonButton)
-                return;
-
-            buttonContainerNode.AddChild(lanAbandonButton);
-            buttonContainerNode.MoveChild(lanAbandonButton, 3);
-
-            lanAbandonButton.Connect(NClickableControl.SignalName.Released,
-                Callable.From<NButton>(_ =>
-                {
-                    var traverse = Traverse.Create(__instance);
-
-                    TaskHelper.RunSafely(
-                        LanHostHelper.TryAbandonMultiplayerRun(() => traverse.Method("UpdateButtons").GetValue()));
-                }));
-            lanAbandonButton.SetIconAndLocalization("MP_ABANDON");
-            var lanAbandonButtonTitle = Traverse.Create(lanAbandonButton).Field("_title").GetValue<MegaLabel>();
-            lanAbandonButtonTitle.Text = $"LAN {lanAbandonButtonTitle.Text}";
-
-            NSubmenuButtonDuplicateMaterial(lanAbandonButton);
-
-            lanMultiplayerSubmenuButtonService.LanAbandonButton = lanAbandonButton;
+                LanMultiplayerSubmenuButtonService.Instance.LanAbandonButton = lanAbandonButton;
+            }
         }
 
         private static void NSubmenuButtonDuplicateMaterial(NSubmenuButton nSubmenuButton)
         {
-            var traverse = Traverse.Create(nSubmenuButton);
-
-            var bgPanel = traverse.Field("_bgPanel").GetValue<Control>();
+            var bgPanel = nSubmenuButton.GetNode<Control>("BgPanel");
             bgPanel.Material = bgPanel.Material.Duplicate() as Material;
-
-            traverse.Field("_hsv").SetValue(bgPanel.Material);
         }
     }
 

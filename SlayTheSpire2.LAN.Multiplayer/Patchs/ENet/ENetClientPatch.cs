@@ -15,6 +15,13 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.ENet
     [HarmonyPatch(typeof(ENetClient), "ConnectToHost")]
     internal class ENetClientConnectToHostPatch
     {
+        [HarmonyReversePatch]
+        [HarmonyPatch(typeof(ENetClient), "HandleMessageReceived")]
+        private static void HandleMessageReceived(ENetClient instance, ENetServiceData data)
+        {
+            throw new NotImplementedException();
+        }
+
         private static bool Prefix(ENetClient __instance, ulong netId, string ip, ushort port,
             CancellationToken cancelToken, Logger ____logger, INetClientHandler ____handler, ref Task __result)
         {
@@ -82,7 +89,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.ENet
                 handler.OnConnectedToHost();
                 foreach (var item in bufferedPackets)
                 {
-                    Traverse.Create(eNetClient).Method("HandleMessageReceived", item).GetValue();
+                    HandleMessageReceived(eNetClient, item);
                 }
 
                 return null;
