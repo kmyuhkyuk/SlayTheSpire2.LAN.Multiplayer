@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Multiplayer.Serialization;
-using SlayTheSpire2.LAN.Multiplayer.Patchs;
 
 // ReSharper disable ClassNeverInstantiated.Global
 
@@ -12,6 +11,10 @@ namespace SlayTheSpire2.LAN.Multiplayer.Helpers
         private static readonly Action<PacketWriter, int> SetPacketWriterBitPosition;
 
         private static readonly Action<PacketReader, int> SetPacketReaderBitPosition;
+
+        private static readonly Action<byte[], byte[], int, int> WriteBytes;
+
+        private static readonly Action<byte[], int, byte[], int> ReadBits;
 
         private static readonly AccessTools.FieldRef<PacketWriter, byte[]> RefPacketWriterTempBuffer;
 
@@ -29,6 +32,13 @@ namespace SlayTheSpire2.LAN.Multiplayer.Helpers
                 AccessTools.MethodDelegate<Action<PacketReader, int>>(typeof(PacketReader)
                     .GetProperty("BitPosition", flags)
                     ?.SetMethod!);
+
+            WriteBytes = AccessTools.MethodDelegate<Action<byte[], byte[], int, int>>(AccessTools
+                .TypeByName("MegaCrit.Sts2.Core.Multiplayer.Serialization.BitSerializationUtil")
+                .GetMethod("WriteBytes", flags)!);
+            ReadBits = AccessTools.MethodDelegate<Action<byte[], int, byte[], int>>(AccessTools
+                .TypeByName("MegaCrit.Sts2.Core.Multiplayer.Serialization.BitSerializationUtil").GetMethod("ReadBits",
+                    BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public)!);
 
             RefPacketWriterTempBuffer =
                 AccessTools.FieldRefAccess<PacketWriter, byte[]>("_tempBuffer");
@@ -63,7 +73,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Helpers
             span[bytesWritten++] = (byte)val;
 
             var totalBits = bytesWritten * 8;
-            BitSerializationUtilWriteBytesPatch.WriteBytes(tempBuffer, writer.Buffer, writer.BitPosition, totalBits);
+            WriteBytes(tempBuffer, writer.Buffer, writer.BitPosition, totalBits);
             SetPacketWriterBitPosition(writer, writer.BitPosition + totalBits);
         }
 
@@ -91,7 +101,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Helpers
                 Array.Clear(tempBuffer);
 
                 //7-bit variant and 1-bit flag
-                BitSerializationUtilReadBitsPatch.ReadBits(reader.Buffer, reader.BitPosition, tempBuffer, 8);
+                ReadBits(reader.Buffer, reader.BitPosition, tempBuffer, 8);
 
                 SetPacketReaderBitPosition(reader, reader.BitPosition + 8);
 
