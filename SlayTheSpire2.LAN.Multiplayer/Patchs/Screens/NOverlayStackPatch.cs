@@ -10,8 +10,9 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
     [HarmonyPatch("MegaCrit.Sts2.Core.Nodes.Screens.Overlays.NOverlayStack", "Remove")]
     internal class NOverlayStackRemovePatch
     {
-        private static bool Prefix(object __instance, GodotObject overlay)
+        private static bool Prefix(object __instance, object screen)
         {
+            var overlay = screen as GodotObject;
             if (overlay == null || !GodotObject.IsInstanceValid(overlay))
             {
                 return false;
