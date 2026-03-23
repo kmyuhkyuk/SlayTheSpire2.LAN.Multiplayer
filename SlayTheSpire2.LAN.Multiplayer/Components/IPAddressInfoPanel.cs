@@ -193,7 +193,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
                     !string.IsNullOrEmpty(_ipAddressLabel.Text))
                 {
                     DisplayServer.ClipboardSet(_ipAddressLabel.Text);
-                    _copiedLabel.ShowWithPosition(inputEventMouseButton.GlobalPosition);
+                    _copiedLabel.ShowWithGlobalPosition(inputEventMouseButton.GlobalPosition);
                 }
             };
 
@@ -210,7 +210,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
                     !string.IsNullOrEmpty(_ipv6AddressLabel.Text))
                 {
                     DisplayServer.ClipboardSet(_ipv6AddressLabel.Text);
-                    _copiedLabel.ShowWithPosition(inputEventMouseButton.GlobalPosition);
+                    _copiedLabel.ShowWithGlobalPosition(inputEventMouseButton.GlobalPosition);
                 }
             };
 
@@ -304,6 +304,8 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
 
                     ipAddressLabel.SetTextAutoSize($"{localIPAddress}:{port}");
 
+                    _localIPAddressContainer.AddChildSafely(ipAddressLabel);
+
                     ipAddressLabel.GuiInput += inputEvent =>
                     {
                         if (inputEvent is InputEventMouseButton
@@ -313,11 +315,9 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
                             !string.IsNullOrEmpty(ipAddressLabel.Text))
                         {
                             DisplayServer.ClipboardSet(ipAddressLabel.Text);
-                            _copiedLabel?.ShowWithPosition(inputEventMouseButton.GlobalPosition);
+                            _copiedLabel?.ShowWithGlobalPosition(inputEventMouseButton.GlobalPosition);
                         }
                     };
-
-                    _localIPAddressContainer.AddChildSafely(ipAddressLabel);
 
                     hasLocalIPAddress = true;
                 }

@@ -32,7 +32,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
             base._Ready();
         }
 
-        public void ShowWithPosition(Vector2 position)
+        public void ShowWithGlobalPosition(Vector2 position)
         {
             _tween?.Kill();
 
