@@ -193,7 +193,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
                     !string.IsNullOrEmpty(_ipAddressLabel.Text))
                 {
                     DisplayServer.ClipboardSet(_ipAddressLabel.Text);
-                    _copiedLabel.ShowWithGlobalPosition(inputEventMouseButton.GlobalPosition);
+                    _copiedLabel.Show(inputEventMouseButton.GlobalPosition);
                 }
             };
 
@@ -210,7 +210,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
                     !string.IsNullOrEmpty(_ipv6AddressLabel.Text))
                 {
                     DisplayServer.ClipboardSet(_ipv6AddressLabel.Text);
-                    _copiedLabel.ShowWithGlobalPosition(inputEventMouseButton.GlobalPosition);
+                    _copiedLabel.Show(inputEventMouseButton.GlobalPosition);
                 }
             };
 
@@ -315,7 +315,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
                             !string.IsNullOrEmpty(ipAddressLabel.Text))
                         {
                             DisplayServer.ClipboardSet(ipAddressLabel.Text);
-                            _copiedLabel?.ShowWithGlobalPosition(inputEventMouseButton.GlobalPosition);
+                            _copiedLabel?.Show(inputEventMouseButton.GlobalPosition);
                         }
                     };
 
