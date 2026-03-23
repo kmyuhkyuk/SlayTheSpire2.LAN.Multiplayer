@@ -32,13 +32,13 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
             base._Ready();
         }
 
-        public void ShowWithGlobalPosition(Vector2 position)
+        public void Show(Vector2 globalPosition)
         {
             _tween?.Kill();
 
             Modulate = new Color(Colors.White);
 
-            GlobalPosition = position;
+            GlobalPosition = globalPosition;
 
             _tween = GetTree().CreateTween();
 
