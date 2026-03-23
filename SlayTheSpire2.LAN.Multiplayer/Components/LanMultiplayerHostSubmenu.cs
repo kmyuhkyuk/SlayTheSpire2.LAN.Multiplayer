@@ -34,7 +34,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
                 child.Reparent(lanMultiplayerHostSubmenu, false);
             }
 
-            multiplayerHostSubmenu.QueueFree();
+            multiplayerHostSubmenu.QueueFreeSafely();
 
             return lanMultiplayerHostSubmenu;
         }

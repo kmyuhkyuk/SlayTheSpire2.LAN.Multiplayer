@@ -18,13 +18,18 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
     {
         private static void Prefix(NJoinFriendScreen __instance)
         {
-            var lanPanel = new NinePatchRect { Name = "LANPanel" };
-            __instance.AddChild(lanPanel);
+            var panel = __instance.GetNode<NinePatchRect>("Panel");
 
-            lanPanel.PatchMarginTop = 12;
-            lanPanel.PatchMarginBottom = 12;
-            lanPanel.PatchMarginLeft = 12;
-            lanPanel.PatchMarginRight = 12;
+            var lanPanel = new NinePatchRect
+            {
+                Name = "LANPanel",
+                Texture = panel.Texture,
+                SelfModulate = panel.SelfModulate,
+                PatchMarginTop = 12,
+                PatchMarginBottom = 12,
+                PatchMarginLeft = 12,
+                PatchMarginRight = 12
+            };
 
             lanPanel.SetAnchorsPreset(Control.LayoutPreset.Center);
             lanPanel.OffsetLeft = 450;
@@ -32,43 +37,27 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
             lanPanel.OffsetRight = 790;
             lanPanel.OffsetBottom = 338;
 
-            if (__instance.GetNode("Panel") is NinePatchRect panel)
+            var vBoxContainer = new VBoxContainer
             {
-                lanPanel.Texture = panel.Texture;
-                lanPanel.SelfModulate = panel.SelfModulate;
-            }
+                Alignment = BoxContainer.AlignmentMode.Center
+            };
 
-            var vBoxContainer = new VBoxContainer();
-
-            lanPanel.AddChild(vBoxContainer);
-
-            vBoxContainer.Alignment = BoxContainer.AlignmentMode.Center;
-            vBoxContainer.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
             vBoxContainer.AddThemeConstantOverride("separation", 24);
+            lanPanel.AddChildSafely(vBoxContainer);
+            vBoxContainer.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
 
-            if (__instance.GetNode("TitleLabel").Duplicate() is MegaLabel ipAddressLabel)
+            var addressLineEdit = new AddressLineEdit
             {
-                lanPanel.AddChild(ipAddressLabel);
+                Name = "AddressInput", Text = SettingsService.Instance.SettingsModel.IPAddress,
+                Alignment = HorizontalAlignment.Center, CustomMinimumSize = new Vector2(300, 50),
+                SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter
+            };
 
-                ipAddressLabel.SetTextAutoSize("LAN IP:");
-                ipAddressLabel.CustomMinimumSize = new Vector2(300, 0);
-                ipAddressLabel.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
-            }
-
-            var addressLineEdit = new AddressLineEdit { Name = "AddressInput" };
-
-            vBoxContainer.AddChild(addressLineEdit);
-
-            addressLineEdit.Text = SettingsService.Instance.SettingsModel.IPAddress;
-            addressLineEdit.Alignment = HorizontalAlignment.Center;
-            addressLineEdit.CustomMinimumSize = new Vector2(300, 50);
-            addressLineEdit.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
+            vBoxContainer.AddChildSafely(addressLineEdit);
 
             var joinButton = JoinButton.Create(__instance.GetNode<NJoinFriendRefreshButton>("RefreshButton"));
-
             joinButton.Name = "JointButton";
-
-            vBoxContainer.AddChild(joinButton);
+            vBoxContainer.AddChildSafely(joinButton);
 
             joinButton.Connect(NClickableControl.SignalName.Released, Callable.From<NClickableControl>(_ =>
             {
@@ -95,6 +84,14 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
                             SettingsService.Instance.SettingsModel.NetId, addressInfo.Address, port)));
                 }
             }));
+
+            var ipAddressLabel = (MegaLabel)__instance.GetNode("TitleLabel").Duplicate();
+            ipAddressLabel.CustomMinimumSize = new Vector2(300, 0);
+            ipAddressLabel.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
+            lanPanel.AddChildSafely(ipAddressLabel);
+            ipAddressLabel.SetTextAutoSize("LAN IP:");
+
+            __instance.AddChildSafely(lanPanel);
         }
     }
 }

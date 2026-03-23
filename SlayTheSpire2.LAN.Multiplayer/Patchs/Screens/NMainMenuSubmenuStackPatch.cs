@@ -25,10 +25,8 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
                     if (lanMultiplayerHostSubmenu != null)
                     {
                         lanMultiplayerHostSubmenu.Name = "LANMultiplayerHostSubmenu";
-
-                        __instance.AddChildSafely(lanMultiplayerHostSubmenu);
-
                         lanMultiplayerHostSubmenu.Visible = false;
+                        __instance.AddChildSafely(lanMultiplayerHostSubmenu);
 
                         __result = lanMultiplayerHostSubmenu;
 

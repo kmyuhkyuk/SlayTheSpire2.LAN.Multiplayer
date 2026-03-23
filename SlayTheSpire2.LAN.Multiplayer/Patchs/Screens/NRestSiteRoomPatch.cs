@@ -1,7 +1,9 @@
 ﻿using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Runs;
+using Control = Godot.Control;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
@@ -18,11 +20,11 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
             {
                 var bgContainer = __instance.GetNode("BgContainer");
 
-                var lastLeftCharacterUp = bgContainer.GetNode("Character_3");
-                var lastLeftCharacterDown = bgContainer.GetNode("Character_1");
+                var lastLeftCharacterUp = (Control)bgContainer.GetNode("Character_3");
+                var lastLeftCharacterDown = (Control)bgContainer.GetNode("Character_1");
 
-                var lastRightCharacterUp = bgContainer.GetNode("Character_4");
-                var lastRightCharacterDown = bgContainer.GetNode("Character_2");
+                var lastRightCharacterUp = (Control)bgContainer.GetNode("Character_4");
+                var lastRightCharacterDown = (Control)bgContainer.GetNode("Character_2");
 
                 for (var i = 4; i < ____runState.Players.Count; i++)
                 {
@@ -59,8 +61,8 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
                 var bgContainer = __instance.GetNode("BgContainer");
                 var restSiteBackground = bgContainer.GetChild(0);
 
-                var lastLeftRestSite = restSiteBackground.GetNode("RestSiteLLog");
-                var lastRightRestSite = restSiteBackground.GetNode("RestSiteRLog");
+                var lastLeftRestSite = (Control)restSiteBackground.GetNode("RestSiteLLog");
+                var lastRightRestSite = (Control)restSiteBackground.GetNode("RestSiteRLog");
 
                 for (var i = 4; i < ____runState.Players.Count; i++)
                 {
@@ -76,36 +78,32 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
             }
         }
 
-        private static void AddRestSite(Node restSiteBackground, ref Node restSite, bool isLeft)
+        private static void AddRestSite(Node restSiteBackground, ref Control restSite, bool isLeft)
         {
             var nextRestSiteIndex = restSite.GetIndex() + 1;
-            restSite = restSite.Duplicate();
-            restSiteBackground.AddChild(restSite);
-            restSite.MoveChild(restSite, nextRestSiteIndex);
 
-            if (restSite is Control control)
-            {
-                control.Position = new Vector2(isLeft ? control.Position.X - 200 : control.Position.X + 200,
-                    control.Position.Y - 50);
-            }
+            restSite = (Control)restSite.Duplicate();
+
+            restSite.Position = new Vector2(isLeft ? restSite.Position.X - 200 : restSite.Position.X + 200,
+                restSite.Position.Y - 50);
+
+            restSiteBackground.AddChildSafely(restSite);
+            restSite.MoveChild(restSite, nextRestSiteIndex);
         }
 
-        private static void AddCharacter(Node bgContainer, ref Node character, List<Control> characterContainers,
+        private static void AddCharacter(Node bgContainer, ref Control character, List<Control> characterContainers,
             int index, bool isLeft)
         {
             var nextCharacterIndex = character.GetIndex() + 1;
-            character = character.Duplicate();
-            bgContainer.AddChild(character);
+
+            character = (Control)character.Duplicate();
+            character.Name = $"Character_{index + 1}";
+            bgContainer.AddChildSafely(character);
             bgContainer.MoveChild(character, nextCharacterIndex);
+            character.Position = new Vector2(isLeft ? character.Position.X - 200 : character.Position.X + 200,
+                character.Position.Y - 50);
 
-            if (character is Control control)
-            {
-                control.Name = $"Character_{index + 1}";
-                control.Position = new Vector2(isLeft ? control.Position.X - 200 : control.Position.X + 200,
-                    control.Position.Y - 50);
-
-                characterContainers.Add(control);
-            }
+            characterContainers.Add(character);
         }
     }
 }

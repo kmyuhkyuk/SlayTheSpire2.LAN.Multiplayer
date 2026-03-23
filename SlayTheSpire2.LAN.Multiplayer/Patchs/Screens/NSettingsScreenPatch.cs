@@ -1,6 +1,7 @@
 ﻿using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.addons.mega_text;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Nodes.Screens.Settings;
 using SlayTheSpire2.LAN.Multiplayer.Components;
@@ -26,178 +27,150 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
             var moddingNode = __instance.GetNode("%Modding");
 
             var vBoxContainerNode = moddingNode.GetParent();
-            var generalSettings = vBoxContainerNode.GetParent();
 
-            if (__instance.GetNode("%ModdingDivider").Duplicate() is ColorRect hostPortDivider &&
-                moddingNode.Duplicate() is MarginContainer hostPort &&
-                hostPort.GetNode("Label") is MegaRichTextLabel hostPortLabel)
+            var hostPortDivider = (ColorRect)__instance.GetNode("%ModdingDivider").Duplicate();
+            hostPortDivider.Name = "HostPortDivider";
+            hostPortDivider.Visible = true;
+            vBoxContainerNode.AddChildSafely(hostPortDivider);
+            vBoxContainerNode.MoveChild(hostPortDivider, moddingNode.GetIndex() + 1);
+
+            var hostPort = (MarginContainer)moddingNode.Duplicate();
+            hostPort.Name = "HostPort";
+            hostPort.RemoveChildSafely(hostPort.GetNode("ModdingButton"));
+            hostPort.Visible = true;
+
+            var hostPortLineEdit = new SpinBox
             {
-                hostPortDivider.Name = "HostPortDivider";
+                Name = "HostPortInput", CustomMinimumSize = new Vector2(324, 64),
+                SizeFlagsHorizontal = Control.SizeFlags.ShrinkEnd, Step = 1, MinValue = 0, MaxValue = 65535
+            };
 
-                vBoxContainerNode.AddChild(hostPortDivider);
-                vBoxContainerNode.MoveChild(hostPortDivider, moddingNode.GetIndex() + 1);
+            hostPortLineEdit.GetLineEdit().Alignment = HorizontalAlignment.Center;
+            hostPort.AddChildSafely(hostPortLineEdit);
 
-                hostPortDivider.Show();
+            hostPortLineEdit.Value = SettingsService.Instance.SettingsModel.HostPort;
+            hostPortLineEdit.ValueChanged += value =>
+            {
+                SettingsService.Instance.SettingsModel.HostPort = (ushort)value;
+                SettingsService.Instance.WriteSettings();
+            };
 
-                hostPort.Name = "HostPort";
+            vBoxContainerNode.AddChildSafely(hostPort);
+            vBoxContainerNode.MoveChild(hostPort, hostPortDivider.GetIndex() + 1);
 
-                hostPort.RemoveChild(hostPort.GetNode("ModdingButton"));
+            var hostPortLabel = (MegaRichTextLabel)hostPort.GetNode("Label");
+            hostPortLabel.SetTextAutoSize("Host Port");
 
-                vBoxContainerNode.AddChild(hostPort);
-                vBoxContainerNode.MoveChild(hostPort, hostPortDivider.GetIndex() + 1);
+            var hostMaxPlayersDivider = (ColorRect)__instance.GetNode("%ModdingDivider").Duplicate();
+            hostMaxPlayersDivider.Name = "HostMaxPlayersDivider";
+            hostMaxPlayersDivider.Visible = true;
+            vBoxContainerNode.AddChildSafely(hostMaxPlayersDivider);
+            vBoxContainerNode.MoveChild(hostMaxPlayersDivider, moddingNode.GetIndex() + 1);
 
-                hostPort.Show();
+            var hostMaxPlayers = (MarginContainer)moddingNode.Duplicate();
+            hostMaxPlayers.Name = "HostMaxPlayers";
+            hostMaxPlayers.RemoveChildSafely(hostMaxPlayers.GetNode("ModdingButton"));
+            hostMaxPlayers.Visible = true;
 
-                var hostPortLineEdit = new SpinBox { Name = "HostPortInput" };
-                hostPort.AddChild(hostPortLineEdit);
+            var hostMaxPlayersInput = new SpinBox
+            {
+                Name = "HostMaxPlayersInput", CustomMinimumSize = new Vector2(324, 64),
+                SizeFlagsHorizontal = Control.SizeFlags.ShrinkEnd, Step = 1, MinValue = 2,
+            };
 
-                hostPortLineEdit.CustomMinimumSize = new Vector2(324, 64);
-                hostPortLineEdit.SizeFlagsHorizontal = Control.SizeFlags.ShrinkEnd;
-                hostPortLineEdit.GetLineEdit().Alignment = HorizontalAlignment.Center;
+            hostMaxPlayersInput.GetLineEdit().Alignment = HorizontalAlignment.Center;
+            hostMaxPlayers.AddChildSafely(hostMaxPlayersInput);
 
-                hostPortLineEdit.Step = 1;
-                hostPortLineEdit.MinValue = 0;
-                hostPortLineEdit.MaxValue = 65535;
-                hostPortLineEdit.Value = SettingsService.Instance.SettingsModel.HostPort;
-                hostPortLineEdit.ValueChanged += value =>
+            hostMaxPlayersInput.Value = SettingsService.Instance.SettingsModel.HostMaxPlayers;
+            hostMaxPlayersInput.ValueChanged += value =>
+            {
+                SettingsService.Instance.SettingsModel.HostMaxPlayers = (int)value;
+                SettingsService.Instance.WriteSettings();
+            };
+
+            vBoxContainerNode.AddChildSafely(hostMaxPlayers);
+            vBoxContainerNode.MoveChild(hostMaxPlayers, hostMaxPlayersDivider.GetIndex() + 1);
+
+            var hostMaxPlayersLabel = (MegaRichTextLabel)hostMaxPlayers.GetNode("Label");
+            hostMaxPlayersLabel.SetTextAutoSize("Host Max Players");
+
+            var playerNameDivider = (ColorRect)__instance.GetNode("%ModdingDivider").Duplicate();
+            playerNameDivider.Name = "PlayerNameDivider";
+            playerNameDivider.Visible = true;
+            vBoxContainerNode.AddChildSafely(playerNameDivider);
+            vBoxContainerNode.MoveChild(playerNameDivider, moddingNode.GetIndex() + 1);
+
+            var playerName = (MarginContainer)moddingNode.Duplicate();
+            playerName.Name = "PlayerName";
+            playerName.RemoveChildSafely(playerName.GetNode("ModdingButton"));
+            playerName.Visible = true;
+
+            var marginContainer = new MarginContainer();
+            playerName.AddChildSafely(marginContainer);
+
+            marginContainer.AddThemeConstantOverride("margin_right", 18);
+
+            var playerNameInput = new PlayerNameLineEdit
+            {
+                Name = "PlayerNameInput", CustomMinimumSize = new Vector2(308, 64),
+                SizeFlagsHorizontal = Control.SizeFlags.ShrinkEnd, Alignment = HorizontalAlignment.Center,
+                MaxLength = 16
+            };
+
+            marginContainer.AddChildSafely(playerNameInput);
+
+            playerNameInput.Text = SettingsService.Instance.SettingsModel.PlayerName;
+            playerNameInput.TextChanged += value =>
+            {
+                if (playerNameInput.IsEmpty || !playerNameInput.IsInvalid)
                 {
-                    SettingsService.Instance.SettingsModel.HostPort = (ushort)value;
+                    SettingsService.Instance.SettingsModel.PlayerName = value;
+                    LanPlayerNameService.Instance.SetHostPlayerName();
                     SettingsService.Instance.WriteSettings();
-                };
+                }
+            };
 
-                hostPortLabel.Text = "Host Port";
-            }
+            vBoxContainerNode.AddChildSafely(playerName);
+            vBoxContainerNode.MoveChild(playerName, playerNameDivider.GetIndex() + 1);
 
-            if (__instance.GetNode("%ModdingDivider").Duplicate() is ColorRect hostMaxPlayersDivider &&
-                moddingNode.Duplicate() is MarginContainer hostMaxPlayers &&
-                hostMaxPlayers.GetNode("Label") is MegaRichTextLabel hostMaxPlayersLabel)
+            var playerNameLabel = (MegaRichTextLabel)playerName.GetNode("Label");
+            playerNameLabel.SetTextAutoSize("Player Name");
+
+            var netIdDivider = (ColorRect)__instance.GetNode("%ModdingDivider").Duplicate();
+            netIdDivider.Name = "NetIDDivider";
+            netIdDivider.Visible = true;
+            vBoxContainerNode.AddChildSafely(netIdDivider);
+            vBoxContainerNode.MoveChild(netIdDivider, moddingNode.GetIndex() + 1);
+
+            var netId = (MarginContainer)moddingNode.Duplicate();
+            netId.Name = "NetID";
+            netId.RemoveChildSafely(netId.GetNode("ModdingButton"));
+            netId.Visible = true;
+
+            var netIdInput = new SpinBox
             {
-                hostMaxPlayersDivider.Name = "HostMaxPlayersDivider";
+                Name = "NetIDInput", CustomMinimumSize = new Vector2(324, 64),
+                SizeFlagsHorizontal = Control.SizeFlags.ShrinkEnd, Step = 1, MinValue = 2, MaxValue = ulong.MaxValue
+            };
 
-                vBoxContainerNode.AddChild(hostMaxPlayersDivider);
-                vBoxContainerNode.MoveChild(hostMaxPlayersDivider, moddingNode.GetIndex() + 1);
+            netIdInput.GetLineEdit().Alignment = HorizontalAlignment.Center;
+            netId.AddChildSafely(netIdInput);
 
-                hostMaxPlayersDivider.Show();
-
-                hostMaxPlayers.Name = "HostMaxPlayers";
-
-                hostMaxPlayers.RemoveChild(hostMaxPlayers.GetNode("ModdingButton"));
-
-                vBoxContainerNode.AddChild(hostMaxPlayers);
-                vBoxContainerNode.MoveChild(hostMaxPlayers, hostMaxPlayersDivider.GetIndex() + 1);
-
-                hostMaxPlayers.Show();
-
-                var hostMaxPlayersInput = new SpinBox { Name = "HostMaxPlayersInput" };
-                hostMaxPlayers.AddChild(hostMaxPlayersInput);
-
-                hostMaxPlayersInput.CustomMinimumSize = new Vector2(324, 64);
-                hostMaxPlayersInput.SizeFlagsHorizontal = Control.SizeFlags.ShrinkEnd;
-                hostMaxPlayersInput.GetLineEdit().Alignment = HorizontalAlignment.Center;
-
-                hostMaxPlayersInput.Step = 1;
-                hostMaxPlayersInput.MinValue = 2;
-                hostMaxPlayersInput.Value = SettingsService.Instance.SettingsModel.HostMaxPlayers;
-                hostMaxPlayersInput.ValueChanged += value =>
-                {
-                    SettingsService.Instance.SettingsModel.HostMaxPlayers = (int)value;
-                    SettingsService.Instance.WriteSettings();
-                };
-
-                hostMaxPlayersLabel.Text = "Host Max Players";
-            }
-
-            if (__instance.GetNode("%ModdingDivider").Duplicate() is ColorRect playerNameDivider &&
-                moddingNode.Duplicate() is MarginContainer playerName &&
-                playerName.GetNode("Label") is MegaRichTextLabel playerNameLabel)
+            netIdInput.Value = SettingsService.Instance.SettingsModel.NetId;
+            netIdInput.ValueChanged += value =>
             {
-                playerNameDivider.Name = "PlayerNameDivider";
+                SettingsService.Instance.SettingsModel.NetId = (ulong)value;
+                SettingsService.Instance.WriteSettings();
+            };
 
-                vBoxContainerNode.AddChild(playerNameDivider);
-                vBoxContainerNode.MoveChild(playerNameDivider, moddingNode.GetIndex() + 1);
+            var netIdLabel = (MegaRichTextLabel)netId.GetNode("Label");
+            netIdLabel.SetTextAutoSize("NetID");
 
-                playerNameDivider.Show();
+            vBoxContainerNode.AddChildSafely(netId);
+            vBoxContainerNode.MoveChild(netId, netIdDivider.GetIndex() + 1);
 
-                playerName.Name = "PlayerName";
-
-                playerName.RemoveChild(playerName.GetNode("ModdingButton"));
-
-                vBoxContainerNode.AddChild(playerName);
-                vBoxContainerNode.MoveChild(playerName, playerNameDivider.GetIndex() + 1);
-
-                playerName.Show();
-
-                var marginContainer = new MarginContainer();
-                playerName.AddChild(marginContainer);
-
-                marginContainer.AddThemeConstantOverride("margin_right", 18);
-
-                var playerNameInput = new PlayerNameLineEdit { Name = "PlayerNameInput" };
-                marginContainer.AddChild(playerNameInput);
-
-                playerNameInput.CustomMinimumSize = new Vector2(308, 64);
-                playerNameInput.SizeFlagsHorizontal = Control.SizeFlags.ShrinkEnd;
-                playerNameInput.Alignment = HorizontalAlignment.Center;
-
-                playerNameInput.MaxLength = 16;
-                playerNameInput.Text = SettingsService.Instance.SettingsModel.PlayerName;
-                playerNameInput.TextChanged += value =>
-                {
-                    if (playerNameInput.IsEmpty || !playerNameInput.IsInvalid)
-                    {
-                        SettingsService.Instance.SettingsModel.PlayerName = value;
-                        LanPlayerNameService.Instance.SetHostPlayerName();
-                        SettingsService.Instance.WriteSettings();
-                    }
-                };
-
-                playerNameLabel.Text = "Player Name";
-            }
-
-            if (__instance.GetNode("%ModdingDivider").Duplicate() is ColorRect netIdDivider &&
-                moddingNode.Duplicate() is MarginContainer netId &&
-                netId.GetNode("Label") is MegaRichTextLabel netIdLabel)
-            {
-                netIdDivider.Name = "NetIDDivider";
-
-                vBoxContainerNode.AddChild(netIdDivider);
-                vBoxContainerNode.MoveChild(netIdDivider, moddingNode.GetIndex() + 1);
-
-                netIdDivider.Show();
-
-                netId.Name = "NetID";
-
-                netId.RemoveChild(netId.GetNode("ModdingButton"));
-
-                vBoxContainerNode.AddChild(netId);
-                vBoxContainerNode.MoveChild(netId, netIdDivider.GetIndex() + 1);
-
-                netId.Show();
-
-                var netIdInput = new SpinBox { Name = "NetIDInput" };
-                netId.AddChild(netIdInput);
-
-                netIdInput.CustomMinimumSize = new Vector2(324, 64);
-                netIdInput.SizeFlagsHorizontal = Control.SizeFlags.ShrinkEnd;
-                netIdInput.GetLineEdit().Alignment = HorizontalAlignment.Center;
-
-                netIdInput.Step = 1;
-                netIdInput.MinValue = 2;
-                netIdInput.MaxValue = ulong.MaxValue;
-                netIdInput.Value = SettingsService.Instance.SettingsModel.NetId;
-                netIdInput.ValueChanged += value =>
-                {
-                    SettingsService.Instance.SettingsModel.NetId = (ulong)value;
-                    SettingsService.Instance.WriteSettings();
-                };
-
-                netIdLabel.Text = "NetID";
-            }
-
-            if (generalSettings is NSettingsPanel nSettingsPanel)
-            {
-                RefreshSize(nSettingsPanel);
-            }
+            var generalSettings = (NSettingsPanel)vBoxContainerNode.GetParent();
+            RefreshSize(generalSettings);
         }
     }
 

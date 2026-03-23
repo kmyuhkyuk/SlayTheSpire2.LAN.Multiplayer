@@ -47,104 +47,69 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
 
         public static IPAddressInfoPanel Create()
         {
-            var ipAddressInfoPanel = new IPAddressInfoPanel();
-
-            ipAddressInfoPanel.MouseFilter = MouseFilterEnum.Ignore;
-
+            var ipAddressInfoPanel = new IPAddressInfoPanel { MouseFilter = MouseFilterEnum.Ignore };
             ipAddressInfoPanel.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
 
-            var content = new VBoxContainer { Name = "Content" };
-            ipAddressInfoPanel.AddChild(content);
+            var content = new VBoxContainer { Name = "Content", MouseFilter = MouseFilterEnum.Stop };
+            ipAddressInfoPanel.AddChildSafely(content);
 
-            content.MouseFilter = MouseFilterEnum.Stop;
+            var menu = new Control
+                { Name = "Menu", CustomMinimumSize = new Vector2(300, 24), MouseFilter = MouseFilterEnum.Pass };
+            content.AddChildSafely(menu);
 
-            var menu = new Control { Name = "Menu" };
-            content.AddChild(menu);
+            var background = new NinePatchRect
+            {
+                Name = "Background", MouseFilter = MouseFilterEnum.Ignore,
+                Texture = GD.Load<CompressedTexture2D>("res://images/ui/tiny_nine_patch.png"), PatchMarginLeft = 12,
+                PatchMarginTop = 12, PatchMarginRight = 12, PatchMarginBottom = 12,
+                Modulate = new Color(Colors.Black, 0.471f)
+            };
 
-            menu.CustomMinimumSize = new Vector2(300, 24);
-
-            menu.MouseFilter = MouseFilterEnum.Pass;
-
-            var background = new NinePatchRect { Name = "Background" };
-            menu.AddChild(background);
-
-            background.MouseFilter = MouseFilterEnum.Ignore;
-
+            menu.AddChildSafely(background);
             background.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
 
-            background.Texture = GD.Load<CompressedTexture2D>("res://images/ui/tiny_nine_patch.png");
-            background.PatchMarginLeft = 12;
-            background.PatchMarginTop = 12;
-            background.PatchMarginRight = 12;
-            background.PatchMarginBottom = 12;
+            var menuIcon = new TextureRect { Name = "Icon", MouseFilter = MouseFilterEnum.Ignore };
 
-            background.Modulate = new Color(Colors.Black, 0.471f);
+            var menuSvgImage = new Image();
+            menuSvgImage.LoadSvgFromString(
+                "<svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\" viewBox=\"0 -960 960 960\" width=\"24px\" fill=\"#FFFFFF\"><path d=\"M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z\"/></svg>");
+            menuIcon.Texture = ImageTexture.CreateFromImage(menuSvgImage);
 
-            var menuIcon = new TextureRect { Name = "Icon" };
-            menu.AddChild(menuIcon);
-
-            menuIcon.MouseFilter = MouseFilterEnum.Ignore;
-
+            menu.AddChildSafely(menuIcon);
             menuIcon.SetAnchorsPreset(LayoutPreset.Center);
             menuIcon.OffsetLeft = -12;
             menuIcon.OffsetTop = -12;
             menuIcon.OffsetRight = 12;
             menuIcon.OffsetBottom = 12;
 
-            var menuSvgImage = new Image();
+            var box = new PanelContainer
+                { Name = "Box", MouseFilter = MouseFilterEnum.Ignore, Modulate = new Color(Colors.White, 0) };
 
-            menuSvgImage.LoadSvgFromString(
-                "<svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\" viewBox=\"0 -960 960 960\" width=\"24px\" fill=\"#FFFFFF\"><path d=\"M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z\"/></svg>");
-
-            menuIcon.Texture = ImageTexture.CreateFromImage(menuSvgImage);
-
-            var box = new PanelContainer { Name = "Box" };
-            content.AddChild(box);
-
-            box.MouseFilter = MouseFilterEnum.Ignore;
-
-            box.Modulate = new Color(Colors.White, 0);
-
-            var styleBox = new StyleBoxTexture();
-
-            styleBox.Texture = GD.Load<CompressedTexture2D>("res://images/ui/tiny_nine_patch.png");
-            styleBox.TextureMarginLeft = 12;
-            styleBox.TextureMarginTop = 12;
-            styleBox.TextureMarginRight = 12;
-            styleBox.TextureMarginBottom = 12;
-
-            styleBox.ContentMarginLeft = 12;
-            styleBox.ContentMarginTop = 12;
-            styleBox.ContentMarginRight = 12;
-            styleBox.ContentMarginBottom = 12;
-
-            styleBox.ModulateColor = new Color(Colors.Black, 0.471f);
+            var styleBox = new StyleBoxTexture
+            {
+                Texture = GD.Load<CompressedTexture2D>("res://images/ui/tiny_nine_patch.png"), TextureMarginLeft = 12,
+                TextureMarginTop = 12, TextureMarginRight = 12, TextureMarginBottom = 12, ContentMarginLeft = 12,
+                ContentMarginTop = 12, ContentMarginRight = 12, ContentMarginBottom = 12,
+                ModulateColor = new Color(Colors.Black, 0.471f)
+            };
 
             box.AddThemeStyleboxOverride("panel", styleBox);
+            content.AddChildSafely(box);
 
-            var container = new VBoxContainer { Name = "Container" };
-            box.AddChild(container);
-
-            container.MouseFilter = MouseFilterEnum.Ignore;
-
+            var container = new VBoxContainer
+            {
+                Name = "Container", MouseFilter = MouseFilterEnum.Ignore, Alignment = BoxContainer.AlignmentMode.Center
+            };
+            container.AddThemeConstantOverride("separation", 8);
+            box.AddChildSafely(container);
             container.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
 
-            container.Alignment = BoxContainer.AlignmentMode.Center;
+            var loading = new Control
+                { Name = "Loading", CustomMinimumSize = new Vector2(64, 64), MouseFilter = MouseFilterEnum.Ignore };
+            container.AddChildSafely(loading);
 
-            container.AddThemeConstantOverride("separation", 8);
-
-            var loading = new Control { Name = "Loading" };
-            container.AddChild(loading);
-
-            loading.CustomMinimumSize = new Vector2(64, 64);
-
-            loading.MouseFilter = MouseFilterEnum.Ignore;
-
-            var loadingIcon = new LoadingIcon();
-            loading.AddChild(loadingIcon);
-
-            loadingIcon.MouseFilter = MouseFilterEnum.Ignore;
-
+            var loadingIcon = new LoadingIcon { MouseFilter = MouseFilterEnum.Ignore };
+            loading.AddChildSafely(loadingIcon);
             loadingIcon.SetAnchorsPreset(LayoutPreset.Center);
             loadingIcon.OffsetLeft = -32;
             loadingIcon.OffsetTop = -32;
@@ -157,66 +122,52 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
 
             content.SetAnchorsAndOffsetsPreset(LayoutPreset.CenterTop);
 
-            var copiedLabel = new CopiedLabel { Name = "CopiedLabel" };
-            ipAddressInfoPanel.AddChild(copiedLabel);
-
-            copiedLabel.MouseFilter = MouseFilterEnum.Ignore;
+            var copiedLabel = new CopiedLabel { Name = "CopiedLabel", MouseFilter = MouseFilterEnum.Ignore };
+            ipAddressInfoPanel.AddChildSafely(copiedLabel);
 
             return ipAddressInfoPanel;
         }
 
         private static void AddAddressElement(Node container, string name, string locKeyPrefix, bool isTrim)
         {
-            var addressElement = new HBoxContainer { Name = name };
-            container.AddChild(addressElement);
+            var addressElement = new HBoxContainer
+                { Name = name, CustomMinimumSize = new Vector2(0, 24), MouseFilter = MouseFilterEnum.Ignore };
 
-            addressElement.CustomMinimumSize = new Vector2(0, 24);
-
-            addressElement.Alignment = BoxContainer.AlignmentMode.Center;
-
-            addressElement.MouseFilter = MouseFilterEnum.Ignore;
-
-            var ipAddressTitleLabel = new IPAddressLabel { Name = "TitleLabel" };
-            addressElement.AddChild(ipAddressTitleLabel);
-
-            ipAddressTitleLabel.MouseFilter = MouseFilterEnum.Ignore;
-
+            var ipAddressTitleLabel = new IPAddressLabel { Name = "TitleLabel", MouseFilter = MouseFilterEnum.Ignore };
+            addressElement.AddChildSafely(ipAddressTitleLabel);
             ipAddressTitleLabel.SetLocalization(locKeyPrefix);
 
-            var ipAddressLabel = new IPAddressLabel { Name = "Label" };
-            addressElement.AddChild(ipAddressLabel);
-
-            ipAddressLabel.MouseFilter = MouseFilterEnum.Ignore;
+            var ipAddressLabel = new IPAddressLabel { Name = "Label", MouseFilter = MouseFilterEnum.Ignore };
 
             if (isTrim)
             {
                 ipAddressLabel.SizeFlagsHorizontal = SizeFlags.ExpandFill;
                 ipAddressLabel.TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis;
             }
+
+            addressElement.AddChildSafely(ipAddressLabel);
+
+            container.AddChildSafely(addressElement);
         }
 
         private static void AddAddressContainer(Node container, string name, string locKeyPrefix)
         {
-            var addressElement = new VBoxContainer { Name = name };
-            container.AddChild(addressElement);
+            var addressElement = new VBoxContainer
+                { Name = name, CustomMinimumSize = new Vector2(0, 24), MouseFilter = MouseFilterEnum.Ignore };
 
-            addressElement.CustomMinimumSize = new Vector2(0, 24);
-
-            addressElement.MouseFilter = MouseFilterEnum.Ignore;
-
-            var ipAddressTitleLabel = new IPAddressLabel { Name = "TitleLabel" };
-            addressElement.AddChild(ipAddressTitleLabel);
-
-            ipAddressTitleLabel.HorizontalAlignment = HorizontalAlignment.Center;
-
+            var ipAddressTitleLabel = new IPAddressLabel
+                { Name = "TitleLabel", HorizontalAlignment = HorizontalAlignment.Center };
+            addressElement.AddChildSafely(ipAddressTitleLabel);
             ipAddressTitleLabel.SetLocalization(locKeyPrefix);
 
-            var vBoxContainer = new VBoxContainer { Name = "Container" };
-            addressElement.AddChild(vBoxContainer);
+            var vBoxContainer = new VBoxContainer
+            {
+                Name = "Container", MouseFilter = MouseFilterEnum.Ignore, Alignment = BoxContainer.AlignmentMode.Center
+            };
 
-            vBoxContainer.MouseFilter = MouseFilterEnum.Ignore;
+            addressElement.AddChildSafely(vBoxContainer);
 
-            vBoxContainer.Alignment = BoxContainer.AlignmentMode.Center;
+            container.AddChildSafely(addressElement);
         }
 
         public override void _Ready()
@@ -312,7 +263,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
 
             foreach (var child in _localIPAddressContainer.GetChildren())
             {
-                child.QueueFree();
+                child.QueueFreeSafely();
             }
 
             _loading.Visible = true;
@@ -344,20 +295,14 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
 
             var hasLocalIPAddress = false;
 
-            var localIPAddressList = GetLocalIPAddressList();
-
-            foreach (var localIPAddress in localIPAddressList)
+            foreach (var localIPAddress in GetLocalIPAddress())
             {
                 if (localIPAddress != ipAddress)
                 {
-                    var ipAddressLabel = new IPAddressLabel();
-                    _localIPAddressContainer.AddChild(ipAddressLabel);
+                    var ipAddressLabel = new IPAddressLabel
+                        { MouseFilter = MouseFilterEnum.Pass, HorizontalAlignment = HorizontalAlignment.Center };
 
-                    ipAddressLabel.MouseFilter = MouseFilterEnum.Pass;
-
-                    ipAddressLabel.HorizontalAlignment = HorizontalAlignment.Center;
-
-                    ipAddressLabel.Text = $"{localIPAddress}:{port}";
+                    ipAddressLabel.SetTextAutoSize($"{localIPAddress}:{port}");
 
                     ipAddressLabel.GuiInput += inputEvent =>
                     {
@@ -371,6 +316,8 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
                             _copiedLabel?.ShowWithPosition(inputEventMouseButton.GlobalPosition);
                         }
                     };
+
+                    _localIPAddressContainer.AddChildSafely(ipAddressLabel);
 
                     hasLocalIPAddress = true;
                 }
@@ -402,10 +349,8 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
             _content.SetAnchorsAndOffsetsPreset(LayoutPreset.CenterTop);
         }
 
-        private static List<string> GetLocalIPAddressList()
+        private static IEnumerable<string> GetLocalIPAddress()
         {
-            var list = new List<string>();
-
             foreach (var networkInterface in NetworkInterface.GetAllNetworkInterfaces())
             {
                 if (networkInterface.OperationalStatus == OperationalStatus.Up &&
@@ -417,14 +362,10 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
                     foreach (var ip in networkInterface.GetIPProperties().UnicastAddresses)
                     {
                         if (ip.Address.AddressFamily == AddressFamily.InterNetwork)
-                        {
-                            list.Add(ip.Address.ToString());
-                        }
+                            yield return ip.Address.ToString();
                     }
                 }
             }
-
-            return list;
         }
 
         private void OnMouseEntered()

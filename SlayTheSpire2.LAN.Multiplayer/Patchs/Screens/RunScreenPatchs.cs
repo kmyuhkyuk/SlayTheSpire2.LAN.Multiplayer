@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Nodes.Screens.CharacterSelect;
 using MegaCrit.Sts2.Core.Nodes.Screens.CustomRun;
@@ -30,10 +31,8 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
         {
             var ipAddressInfoPanel = IPAddressInfoPanel.Create();
             ipAddressInfoPanel.Name = "IPAddressPanel";
-
-            __instance.AddChild(ipAddressInfoPanel);
-
             ipAddressInfoPanel.Visible = false;
+            __instance.AddChildSafely(ipAddressInfoPanel);
         }
     }
 

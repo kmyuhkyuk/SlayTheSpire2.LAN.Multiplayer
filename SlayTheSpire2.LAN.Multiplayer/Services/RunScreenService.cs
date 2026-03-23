@@ -46,14 +46,12 @@ namespace SlayTheSpire2.LAN.Multiplayer.Services
                 NModalContainer.Instance?.Add(nGenericPopup);
 
                 var nVerticalPopup = Traverse.Create(nGenericPopup).Field("_verticalPopup").GetValue<NVerticalPopup>();
-
+                nVerticalPopup.YesButton.Visible = false;
                 nVerticalPopup.NoButton.SetAnchorsPreset(Control.LayoutPreset.CenterBottom);
                 nVerticalPopup.NoButton.OffsetLeft = -90;
                 nVerticalPopup.NoButton.OffsetTop = -152;
                 nVerticalPopup.NoButton.OffsetRight = 90;
                 nVerticalPopup.NoButton.OffsetBottom = -80;
-
-                nVerticalPopup.YesButton.Visible = false;
 
                 await nGenericPopup.WaitForConfirmation(locString,
                     new LocString("gameplay_ui", "CONFIRM_LOAD_SAVE.header"),

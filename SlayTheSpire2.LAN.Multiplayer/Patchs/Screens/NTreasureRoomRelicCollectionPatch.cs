@@ -25,13 +25,9 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
 
                 for (var i = 4; i < runState.Players.Count; i++)
                 {
-                    var newMultiplayerRelicHolder = multiplayerRelicHolder.Duplicate();
-                    container.AddChild(newMultiplayerRelicHolder);
-
-                    if (newMultiplayerRelicHolder is NTreasureRoomRelicHolder nTreasureRoomRelicHolder)
-                    {
-                        nTreasureRoomRelicHolder.Name = $"MultiplayerRelicHolder{i + 1}";
-                    }
+                    var nTreasureRoomRelicHolder = (NTreasureRoomRelicHolder)multiplayerRelicHolder.Duplicate();
+                    nTreasureRoomRelicHolder.Name = $"MultiplayerRelicHolder{i + 1}";
+                    container.AddChildSafely(nTreasureRoomRelicHolder);
                 }
             }
         }
@@ -41,45 +37,31 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
         {
             if (____multiplayerHolders.Count > 4)
             {
-                var container = __instance.GetNode("Container");
+                var gridContainer = new GridContainer
+                    { Name = "RelicContainer", Columns = 4, CustomMinimumSize = new Vector2(0, 469) };
 
-                var scrollContainer = new NScrollableContainer { Name = "ScrollableContainer" };
-
-                var mask = new TextureRect { Name = "Mask" };
-                scrollContainer.AddChild(mask);
-
-                mask.ClipContents = true;
+                gridContainer.AddThemeConstantOverride("h_separation", 42);
+                gridContainer.AddThemeConstantOverride("v_separation", 42);
+                gridContainer.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.TopWide);
 
                 var viewport = new Control { Name = "Viewport" };
-                mask.AddChild(viewport);
-
-                var gridContainer = new GridContainer { Name = "RelicContainer" };
-                viewport.AddChild(gridContainer);
-
-                var scrollbar = PreloadManager.Cache.GetScene(SceneHelper.GetScenePath("ui/scrollbar"))
-                    .Instantiate<NScrollbar>();
-                scrollContainer.AddChild(scrollbar);
-
-                container.AddChild(scrollContainer);
-
-                scrollContainer.SetAnchorsPreset(Control.LayoutPreset.FullRect);
-                scrollContainer.OffsetLeft = -510;
-                scrollContainer.OffsetTop = -250;
-                scrollContainer.OffsetRight = 510;
-                scrollContainer.OffsetBottom = 250;
-
-                mask.SetAnchorsPreset(Control.LayoutPreset.CenterTop);
-                mask.OffsetLeft = -450;
-                mask.OffsetTop = 250;
-                mask.OffsetRight = 450;
-                mask.OffsetBottom = 830;
-
+                viewport.AddChildSafely(gridContainer);
                 viewport.SetAnchorsPreset(Control.LayoutPreset.TopWide);
                 viewport.OffsetLeft = 110;
                 viewport.OffsetTop = 110;
                 viewport.OffsetRight = -120;
                 viewport.OffsetBottom = 580;
 
+                var mask = new TextureRect { Name = "Mask", ClipContents = true };
+                mask.AddChildSafely(viewport);
+                mask.SetAnchorsPreset(Control.LayoutPreset.CenterTop);
+                mask.OffsetLeft = -450;
+                mask.OffsetTop = 250;
+                mask.OffsetRight = 450;
+                mask.OffsetBottom = 830;
+
+                var scrollbar = PreloadManager.Cache.GetScene(SceneHelper.GetScenePath("ui/scrollbar"))
+                    .Instantiate<NScrollbar>();
                 scrollbar.AnchorLeft = 0.794f;
                 scrollbar.AnchorTop = 0.187f;
                 scrollbar.AnchorRight = 0.818f;
@@ -89,13 +71,18 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
                 scrollbar.OffsetRight = -199;
                 scrollbar.OffsetBottom = -163;
 
-                gridContainer.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.TopWide);
+                var scrollContainer = new NScrollableContainer { Name = "ScrollableContainer" };
+                scrollContainer.AddChildSafely(mask);
+                scrollContainer.AddChildSafely(scrollbar);
 
-                gridContainer.Columns = 4;
-                gridContainer.CustomMinimumSize = new Vector2(0, 469);
+                scrollContainer.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+                scrollContainer.OffsetLeft = -510;
+                scrollContainer.OffsetTop = -250;
+                scrollContainer.OffsetRight = 510;
+                scrollContainer.OffsetBottom = 250;
 
-                gridContainer.AddThemeConstantOverride("h_separation", 42);
-                gridContainer.AddThemeConstantOverride("v_separation", 42);
+                var container = __instance.GetNode("Container");
+                container.AddChildSafely(scrollContainer);
 
                 scrollContainer.SetContent(gridContainer, 20, 30);
 

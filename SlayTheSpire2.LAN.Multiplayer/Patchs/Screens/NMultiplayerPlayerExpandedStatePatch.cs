@@ -32,62 +32,54 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
 
                 var disableDrawing = PreloadManager.Cache
                     .GetScene(SceneHelper.GetScenePath("screens/card_library/card_library_tickbox"))
-                    .Instantiate<Control>();
+                    .Instantiate<NLibraryStatTickbox>();
 
-                if (disableDrawing is NLibraryStatTickbox cardLibraryTickBox &&
-                    container.GetNode("MarginContainer") is MarginContainer marginContainer)
+                disableDrawing.Name = "DisableDrawing";
+                disableDrawing.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
+                disableDrawing.SetLabel("Disable drawing");
+
+                var marginContainer = (MarginContainer)container.GetNode("MarginContainer");
+                marginContainer.RemoveThemeConstantOverride("margin_top");
+
+                var lanMapDrawingsService = LanMapDrawingsService.Instance;
+
+                container.AddChildSafely(disableDrawing);
+                container.MoveChild(disableDrawing, 0);
+
+                disableDrawing.IsTicked =
+                    lanMapDrawingsService.DisableDrawingHashSet.Contains(____player.NetId);
+
+                disableDrawing.Toggled += tickBox =>
                 {
-                    disableDrawing.Name = "DisableDrawing";
+                    if (NMapScreen.Instance == null)
+                        return;
 
-                    container.AddChild(cardLibraryTickBox);
-                    container.MoveChild(cardLibraryTickBox, 0);
+                    var drawingState = GetDrawingStateForPlayer(NMapScreen.Instance.Drawings, ____player.NetId);
 
-                    marginContainer.RemoveThemeConstantOverride("margin_top");
+                    var drawViewport = Traverse.Create(drawingState).Field("drawViewport").GetValue<SubViewport>();
 
-                    cardLibraryTickBox.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
-
-                    cardLibraryTickBox.SetLabel("Disable drawing");
-
-                    var lanMapDrawingsService = LanMapDrawingsService.Instance;
-
-                    cardLibraryTickBox.IsTicked =
-                        lanMapDrawingsService.DisableDrawingHashSet.Contains(____player.NetId);
-
-                    cardLibraryTickBox.Toggled += tickBox =>
+                    if (drawViewport != null)
                     {
-                        if (NMapScreen.Instance == null)
-                            return;
-
-                        var drawingState = GetDrawingStateForPlayer(NMapScreen.Instance.Drawings, ____player.NetId);
-
-                        var drawViewport = Traverse.Create(drawingState).Field("drawViewport").GetValue<SubViewport>();
-
                         if (tickBox.IsTicked)
                         {
-                            if (drawViewport != null)
+                            foreach (var line2D in drawViewport.GetChildren().OfType<Line2D>())
                             {
-                                foreach (var line2D in drawViewport.GetChildren().OfType<Line2D>())
-                                {
-                                    line2D.Visible = false;
-                                }
+                                line2D.Visible = false;
                             }
 
                             lanMapDrawingsService.DisableDrawingHashSet.Add(____player.NetId);
                         }
                         else
                         {
-                            if (drawViewport != null)
+                            foreach (var line2D in drawViewport.GetChildren().OfType<Line2D>())
                             {
-                                foreach (var line2D in drawViewport.GetChildren().OfType<Line2D>())
-                                {
-                                    line2D.Visible = true;
-                                }
+                                line2D.Visible = true;
                             }
 
                             lanMapDrawingsService.DisableDrawingHashSet.Remove(____player.NetId);
                         }
-                    };
-                }
+                    }
+                };
             }
         }
     }
