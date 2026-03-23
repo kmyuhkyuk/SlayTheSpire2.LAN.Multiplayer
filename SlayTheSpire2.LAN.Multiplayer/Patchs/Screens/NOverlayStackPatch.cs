@@ -7,10 +7,10 @@ using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
 
 namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
 {
-    [HarmonyPatch(typeof(NOverlayStack), "Remove")]
+    [HarmonyPatch("MegaCrit.Sts2.Core.Nodes.Screens.Overlays.NOverlayStack", "Remove")]
     internal class NOverlayStackRemovePatch
     {
-        private static bool Prefix(NOverlayStack __instance, NOverlay overlay)
+        private static bool Prefix(object __instance, GodotObject overlay)
         {
             if (overlay == null || !GodotObject.IsInstanceValid(overlay))
             {
@@ -22,7 +22,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
             {
                 if (connection["callable"].AsCallable().Target == __instance)
                 {
-                    Plugin.Logger?.LogWarning("NOverlayStack.Remove called twice, preventing crash.");
+                    GD.Print("NOverlayStack.Remove called twice, preventing crash.");
                     return false;
                 }
             }
