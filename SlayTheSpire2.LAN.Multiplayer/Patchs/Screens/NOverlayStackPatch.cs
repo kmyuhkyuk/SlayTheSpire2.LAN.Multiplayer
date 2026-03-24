@@ -1,5 +1,6 @@
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
 
 // ReSharper disable UnusedMember.Global
@@ -7,23 +8,21 @@ using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
 
 namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
 {
-    [HarmonyPatch("MegaCrit.Sts2.Core.Nodes.Screens.Overlays.NOverlayStack", "Remove")]
+    [HarmonyPatch(typeof(NOverlayStack), "Remove")]
     internal class NOverlayStackRemovePatch
     {
-        private static bool Prefix(object __instance, object screen)
+        private static bool Prefix(NOverlayStack __instance, IOverlayScreen screen)
         {
-            var overlay = screen as GodotObject;
-            if (overlay == null || !GodotObject.IsInstanceValid(overlay))
-            {
+            if (screen is not GodotObject overlay || !GodotObject.IsInstanceValid(overlay))
                 return false;
-            }
 
             var connections = overlay.GetSignalConnectionList("Completed");
+
             foreach (var connection in connections)
             {
                 if (connection["callable"].AsCallable().Target == __instance)
                 {
-                    GD.Print("NOverlayStack.Remove called twice, preventing crash.");
+                    Log.Debug("NOverlayStack.Remove called twice, preventing crash.");
                     return false;
                 }
             }
