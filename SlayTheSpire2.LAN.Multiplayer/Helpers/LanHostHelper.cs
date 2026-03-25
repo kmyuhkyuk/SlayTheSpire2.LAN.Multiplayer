@@ -1,4 +1,6 @@
-﻿using Godot;
+﻿using System.Reflection;
+using Godot;
+using HarmonyLib;
 using MegaCrit.Sts2.Core.Daily;
 using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
@@ -24,6 +26,15 @@ namespace SlayTheSpire2.LAN.Multiplayer.Helpers
 {
     internal class LanHostHelper
     {
+        private static readonly Action<NMultiplayerSubmenu> UpdateButtons;
+
+        static LanHostHelper()
+        {
+            UpdateButtons = AccessTools.MethodDelegate<Action<NMultiplayerSubmenu>>(
+                typeof(NMultiplayerSubmenu).GetMethod("UpdateButtons",
+                    BindingFlags.Instance | BindingFlags.NonPublic)!);
+        }
+
         public static void StartHost(GameMode gameMode, Control loadingOverlay, NSubmenuStack stack, ushort port,
             int maxPlayers)
         {
@@ -163,7 +174,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Helpers
             }
         }
 
-        public static async Task TryAbandonMultiplayerRun(Action updateButtons)
+        public static async Task TryAbandonMultiplayerRun(NMultiplayerSubmenu instance)
         {
             var header = new LocString("main_menu_ui", "ABANDON_RUN_CONFIRMATION.header");
             var body = new LocString("main_menu_ui", "ABANDON_RUN_CONFIRMATION.body");
@@ -209,7 +220,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Helpers
             }
 
             LanRunSaveManagerService.Instance.DeleteCurrentMultiplayerRun();
-            updateButtons();
+            UpdateButtons(instance);
         }
     }
 }

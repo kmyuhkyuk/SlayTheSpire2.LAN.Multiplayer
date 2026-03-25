@@ -18,13 +18,6 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
     [HarmonyPatch(typeof(NMultiplayerSubmenu), "_Ready")]
     internal class NMultiplayerSubmenuReadyPatch
     {
-        [HarmonyReversePatch(HarmonyReversePatchType.Snapshot)]
-        [HarmonyPatch(typeof(NMultiplayerSubmenu), "UpdateButtons")]
-        private static void UpdateButtons(NMultiplayerSubmenu instance)
-        {
-            throw new NotImplementedException();
-        }
-
         private static void Prefix(NMultiplayerSubmenu __instance)
         {
             var buttonContainerNode = __instance.GetNode("ButtonContainer");
@@ -105,8 +98,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
             lanAbandonButton.Connect(NClickableControl.SignalName.Released,
                 Callable.From<NButton>(_ =>
                 {
-                    TaskHelper.RunSafely(
-                        LanHostHelper.TryAbandonMultiplayerRun(() => UpdateButtons(__instance)));
+                    TaskHelper.RunSafely(LanHostHelper.TryAbandonMultiplayerRun(__instance));
                 }));
 
             LanMultiplayerSubmenuButtonService.Instance.LanAbandonButton = lanAbandonButton;
