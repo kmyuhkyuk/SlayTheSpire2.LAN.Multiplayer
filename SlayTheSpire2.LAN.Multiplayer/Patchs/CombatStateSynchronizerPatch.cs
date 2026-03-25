@@ -45,19 +45,19 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
             var startTime = DateTime.Now;
             var lastResendTick = DateTime.Now;
 
-            const int timeoutMs = 30;
-            const int resendIntervalMs = 5;
+            const int timeoutSeconds = 30;
+            const int resendIntervalSeconds = 5;
 
             while (!syncCompletionSource.Task.IsCompleted)
             {
-                if ((DateTime.Now - startTime).TotalMilliseconds > timeoutMs)
+                if ((DateTime.Now - startTime).TotalSeconds > timeoutSeconds)
                 {
                     logger.Warn("Sync timeout, skipping waiting for players");
                     break;
                 }
 
                 if (netService.Type == NetGameType.Host &&
-                    (DateTime.Now - lastResendTick).TotalMilliseconds > resendIntervalMs && rngSet != null &&
+                    (DateTime.Now - lastResendTick).TotalSeconds > resendIntervalSeconds && rngSet != null &&
                     sharedRelicGrabBag != null)
                 {
                     logger.Debug("Resending rng sync message");
