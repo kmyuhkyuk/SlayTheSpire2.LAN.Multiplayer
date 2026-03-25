@@ -1,7 +1,6 @@
 ﻿using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Multiplayer;
-using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Multiplayer.Transport;
 using MegaCrit.Sts2.Core.Multiplayer.Transport.ENet;
 using SlayTheSpire2.LAN.Multiplayer.Helpers;
@@ -23,9 +22,10 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.ENet
         }
 
         private static bool Prefix(ENetClient __instance, ulong netId, string ip, ushort port,
-            CancellationToken cancelToken, Logger ____logger, INetClientHandler ____handler, ref Task __result)
+            CancellationToken cancelToken, Logger ____logger, INetClientHandler ____handler,
+            ref Task<NetErrorInfo?> __result)
         {
-            __result = TaskHelper.RunSafely(ConnectToHost(__instance, ____logger, ____handler, netId, ip, port,
+            __result = TaskGenericHelper.RunSafely(ConnectToHost(__instance, ____logger, ____handler, netId, ip, port,
                 cancelToken));
 
             return false;

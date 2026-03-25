@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Multiplayer.Connection;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Multiplayer.Messages.Lobby;
 using MegaCrit.Sts2.Core.Platform;
+using SlayTheSpire2.LAN.Multiplayer.Helpers;
 using SlayTheSpire2.LAN.Multiplayer.Models;
 using SlayTheSpire2.LAN.Multiplayer.Services;
 
@@ -17,7 +18,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
     {
         private static void Postfix(JoinFlow __instance, ref Task<ClientLobbyJoinResponseMessage> __result)
         {
-            __result = AttemptJoin(__instance, __result);
+            __result = TaskGenericHelper.RunSafely(AttemptJoin(__instance, __result));
         }
 
         private static async Task<ClientLobbyJoinResponseMessage> AttemptJoin(JoinFlow joinFlow,
@@ -44,7 +45,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
     {
         private static void Postfix(JoinFlow __instance, ref Task<ClientLoadJoinResponseMessage> __result)
         {
-            __result = AttemptLoadJoin(__instance, __result);
+            __result = TaskGenericHelper.RunSafely(AttemptLoadJoin(__instance, __result));
         }
 
         private static async Task<ClientLoadJoinResponseMessage> AttemptLoadJoin(JoinFlow joinFlow,
@@ -71,7 +72,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
     {
         private static void Postfix(JoinFlow __instance, ref Task<ClientRejoinResponseMessage> __result)
         {
-            __result = AttemptRejoin(__instance, __result);
+            __result = TaskGenericHelper.RunSafely(AttemptRejoin(__instance, __result));
         }
 
         private static async Task<ClientRejoinResponseMessage> AttemptRejoin(JoinFlow joinFlow,
