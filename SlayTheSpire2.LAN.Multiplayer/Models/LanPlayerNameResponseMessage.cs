@@ -1,6 +1,7 @@
 ﻿using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Multiplayer.Serialization;
 using MegaCrit.Sts2.Core.Multiplayer.Transport;
+using SlayTheSpire2.LAN.Multiplayer.Helpers;
 
 namespace SlayTheSpire2.LAN.Multiplayer.Models
 {
@@ -14,7 +15,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Models
 
         public void Serialize(PacketWriter writer)
         {
-            writer.WriteInt(playerNames.Count);
+            PacketHelper.WriteVarInt(writer, (uint)playerNames.Count);
             foreach (var keyValue in playerNames)
             {
                 writer.WriteULong(keyValue.Key);
@@ -24,7 +25,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Models
 
         public void Deserialize(PacketReader reader)
         {
-            var count = reader.ReadInt();
+            var count = PacketHelper.ReadVarInt(reader);
             playerNames = new PlayerNames();
             for (var i = 0; i < count; i++)
             {
