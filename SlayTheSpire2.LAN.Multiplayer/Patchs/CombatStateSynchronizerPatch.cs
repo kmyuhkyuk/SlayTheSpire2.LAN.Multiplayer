@@ -9,6 +9,9 @@ using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using Logger = MegaCrit.Sts2.Core.Logging.Logger;
 
+// ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedType.Global
+
 namespace SlayTheSpire2.LAN.Multiplayer.Patchs
 {
     [HarmonyPatch(typeof(CombatStateSynchronizer), "WaitForSync")]
@@ -52,7 +55,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
             {
                 if ((DateTime.Now - startTime).TotalSeconds > timeoutSeconds)
                 {
-                    logger.Warn("Sync timeout, skipping waiting for players");
+                    logger.Warn("Receive all sync messages timeout, skip waiting for all clients");
                     break;
                 }
 
@@ -60,7 +63,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs
                     (DateTime.Now - lastResendTick).TotalSeconds > resendIntervalSeconds && rngSet != null &&
                     sharedRelicGrabBag != null)
                 {
-                    logger.Debug("Resending rng sync message");
+                    logger.Debug("Resend rng sync message");
 
                     var message = new SyncRngMessage
                     {
