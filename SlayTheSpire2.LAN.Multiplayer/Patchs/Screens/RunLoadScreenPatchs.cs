@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Nodes.Screens.CustomRun;
 using MegaCrit.Sts2.Core.Nodes.Screens.DailyRun;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
 using MegaCrit.Sts2.Core.Platform;
+using SlayTheSpire2.LAN.Multiplayer.Helpers;
 using SlayTheSpire2.LAN.Multiplayer.Services;
 
 // ReSharper disable UnusedMember.Global
@@ -97,7 +98,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
         {
             if (____lobby.NetService.Platform == PlatformType.None)
             {
-                __result = RunScreenService.ShouldAllowRunToBegin(____lobby);
+                __result = TaskGenericHelper.RunSafely(RunScreenService.ShouldAllowRunToBegin(____lobby));
                 return false;
             }
 
@@ -112,7 +113,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
         {
             if (____runLobby.NetService.Platform == PlatformType.None)
             {
-                __result = RunScreenService.ShouldAllowRunToBegin(____runLobby);
+                __result = TaskGenericHelper.RunSafely(RunScreenService.ShouldAllowRunToBegin(____runLobby));
                 return false;
             }
 
