@@ -36,7 +36,6 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
 
                 disableDrawing.Name = "DisableDrawing";
                 disableDrawing.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
-                disableDrawing.SetLabel("Disable drawing");
 
                 var marginContainer = (MarginContainer)container.GetNode("MarginContainer");
                 marginContainer.RemoveThemeConstantOverride("margin_top");
@@ -45,6 +44,8 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
 
                 container.AddChildSafely(disableDrawing);
                 container.MoveChild(disableDrawing, 0);
+
+                disableDrawing.SetLabel("Disable drawing");
 
                 disableDrawing.IsTicked =
                     lanMapDrawingsService.DisableDrawingHashSet.Contains(____player.NetId);
