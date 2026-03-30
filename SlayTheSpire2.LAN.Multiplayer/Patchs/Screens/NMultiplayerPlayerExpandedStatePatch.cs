@@ -3,6 +3,7 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Assets;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Helpers;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Nodes.Multiplayer;
 using MegaCrit.Sts2.Core.Nodes.Screens.CardLibrary;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
@@ -40,12 +41,13 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.Screens
                 var marginContainer = (MarginContainer)container.GetNode("MarginContainer");
                 marginContainer.RemoveThemeConstantOverride("margin_top");
 
-                var lanMapDrawingsService = LanMapDrawingsService.Instance;
-
                 container.AddChildSafely(disableDrawing);
                 container.MoveChild(disableDrawing, 0);
 
-                disableDrawing.SetLabel("Disable drawing");
+                disableDrawing.SetLabel(new LocString("gameplay_ui", "SlayTheSpire2.LAN.Multiplayer.DISABLE_DRAWING")
+                    .GetFormattedText());
+
+                var lanMapDrawingsService = LanMapDrawingsService.Instance;
 
                 disableDrawing.IsTicked =
                     lanMapDrawingsService.DisableDrawingHashSet.Contains(____player.NetId);
