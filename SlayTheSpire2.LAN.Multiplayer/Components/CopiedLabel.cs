@@ -64,7 +64,7 @@ namespace SlayTheSpire2.LAN.Multiplayer.Components
         {
             var locString = new LocString("main_menu_ui", LocKeyPrefix);
             SetTextAutoSize(locString.GetFormattedText());
-            this.ApplyLocaleFontSubstitution(FontType.Regular, ThemeConstants.Label.font);
+            this.ApplyLocaleFontSubstitution(FontType.Regular, ThemeConstants.Label.Font);
         }
     }
 }

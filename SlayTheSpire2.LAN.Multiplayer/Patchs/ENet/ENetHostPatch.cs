@@ -106,10 +106,11 @@ namespace SlayTheSpire2.LAN.Multiplayer.Patchs.ENet
             ref bool ____isConnected, ref NetErrorInfo? __result)
         {
             ____connection = new ENetConnection();
-            var error = ____connection.CreateHostBound("*", port, maxClients);
+            var error = ____connection.CreateHostBound("0.0.0.0", port, maxClients);
             if (error != Error.Ok)
             {
-                ____logger.Error($"Failed to create host! {error}");
+                ____connection = null;
+                ____logger.Error($"Failed to create host on bind address 0.0.0.0! {error}");
                 __result = new NetErrorInfo(error);
                 return false;
             }
